@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "updatedAt": "2026-10-09T15:46:11+09:00",
+  "books": [
+    {
+      "id": "b1",
+      "title": "폭풍이 온다",
+      "author": "",
+      "totalPages": 308,
+      "status": "reading",
+      "startDate": "2026-10-09",
+      "endDate": "",
+      "rating": null,
+      "memo": "",
+      "created": 1791528600000
+    }
+  ],
+  "logs": [
+    {
+      "id": "l1",
+      "created": 1791528600000,
+      "date": "2026-10-09",
+      "bookId": "b1",
+      "mode": "reach",
+      "from": null,
+      "to": 102,
+      "note": ""
+    }
+  ]
+}

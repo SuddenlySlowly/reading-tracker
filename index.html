@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>나의 독서 기록</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%93%9A%3C/text%3E%3C/svg%3E">
 <style>
 :root{
   --bg:#faf6ef; --card:#fffdf9; --ink:#3b2f27; --muted:#8a7a6c; --line:#eadfce;
@@ -57,6 +58,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--accent-soft);bor
 .full{grid-column:1/-1}
 .weeknav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
 .weeknav .wk{font-weight:700;font-size:1.05rem;text-align:center}
+.weeknav .btn{white-space:nowrap}
+@media (max-width:480px){.weeknav .wk{font-size:.92rem}.weeknav .btn{padding:4px 8px}}
 table{width:100%;border-collapse:collapse}
 th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;font-size:.92rem}
 th{color:var(--muted);font-weight:600;font-size:.82rem}
@@ -100,6 +103,10 @@ td.pc{color:var(--muted)} td.gain{color:var(--green);font-weight:700}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:99px;font-size:.9rem;opacity:0;transition:.3s;pointer-events:none;z-index:20}
 .toast.show{opacity:.92}
 .hint{font-size:.8rem;color:var(--muted);margin-top:4px}
+.updated{font-size:.82rem;color:var(--muted);margin:-8px 0 14px}
+.updated.err{color:#b84a3a}
+.nototal{grid-column:1/-1;font-size:.85rem;color:var(--muted)}
+.nototal b{color:var(--accent)}
 @media (max-width:640px){
   .summary{grid-template-columns:repeat(3,1fr);gap:8px}
   .stat{padding:10px}
@@ -117,10 +124,9 @@ td.pc{color:var(--muted)} td.gain{color:var(--green);font-weight:700}
     <h1>📚 나의 <span>독서 기록</span></h1>
     <div class="tools">
       <button class="btn" id="exportBtn">내보내기</button>
-      <button class="btn" id="importBtn">가져오기</button>
-      <input type="file" id="importFile" accept="application/json,.json" class="hidden">
     </div>
   </header>
+  <div class="updated" id="updatedAt">불러오는 중…</div>
 
   <section class="summary">
     <div class="stat"><div class="label">올해 완독</div><div class="value" id="sumDone">0<small>권</small></div></div>
@@ -145,7 +151,6 @@ td.pc{color:var(--muted)} td.gain{color:var(--green);font-weight:700}
           <option value="done">완독</option>
           <option value="stop">중단</option>
         </select>
-        <button class="btn primary" id="addBookBtn">+ 책 추가</button>
       </div>
       <div id="bookList"></div>
     </div>
@@ -169,23 +174,6 @@ td.pc{color:var(--muted)} td.gain{color:var(--green);font-weight:700}
       </table>
     </div>
 
-    <div class="card">
-      <h2>독서 기록 추가</h2>
-      <form id="logForm" class="grid2">
-        <div class="field"><label>날짜</label><input type="date" id="logDate" required></div>
-        <div class="field"><label>책</label><select id="logBook" required></select></div>
-        <div class="field full modeswitch">
-          <label><input type="radio" name="logMode" value="reach" checked> 도달한 페이지로 기록</label>
-          <label><input type="radio" name="logMode" value="range"> 페이지 범위로 기록</label>
-        </div>
-        <div class="field" id="fromWrap" style="display:none"><label>시작 페이지</label><input type="number" id="logFrom" min="0" inputmode="numeric"></div>
-        <div class="field"><label id="toLabel">오늘 도달한 페이지</label><input type="number" id="logTo" min="1" inputmode="numeric" required>
-          <div class="hint" id="logHint"></div></div>
-        <div class="field full"><label>메모 (선택)</label><input type="text" id="logNote" placeholder="인상 깊었던 문장, 느낀 점 등"></div>
-        <div class="full" style="display:flex;justify-content:flex-end"><button class="btn primary" type="submit">기록하기</button></div>
-      </form>
-    </div>
-
     <div class="card chart">
       <h2>최근 12주 진척도 변화 (%)</h2>
       <div id="lineChart"></div>
@@ -203,61 +191,18 @@ td.pc{color:var(--muted)} td.gain{color:var(--green);font-weight:700}
   </section>
 </div>
 
-<!-- 책 추가/수정 모달 -->
-<div class="overlay hidden" id="bookModal">
-  <form class="modal" id="bookForm">
-    <h2 id="bookModalTitle">책 추가</h2>
-    <div class="grid2">
-      <div class="field full"><label>제목 *</label><input id="fTitle" required></div>
-      <div class="field"><label>저자</label><input id="fAuthor"></div>
-      <div class="field"><label>총 페이지 수 *</label><input type="number" id="fPages" min="1" required inputmode="numeric"></div>
-      <div class="field"><label>상태</label>
-        <select id="fStatus">
-          <option value="plan">읽을 예정</option>
-          <option value="reading">읽는 중</option>
-          <option value="done">완독</option>
-          <option value="stop">중단</option>
-        </select></div>
-      <div class="field"><label>별점 (선택)</label>
-        <select id="fRating">
-          <option value="">없음</option>
-          <option value="5">★★★★★</option><option value="4">★★★★☆</option><option value="3">★★★☆☆</option>
-          <option value="2">★★☆☆☆</option><option value="1">★☆☆☆☆</option>
-        </select></div>
-      <div class="field"><label>시작일</label><input type="date" id="fStart"></div>
-      <div class="field"><label>완독일</label><input type="date" id="fEnd"></div>
-      <div class="field full"><label>메모</label><textarea id="fMemo" rows="3"></textarea></div>
-    </div>
-    <div class="foot">
-      <button type="button" class="btn" id="cancelBook">취소</button>
-      <button type="submit" class="btn primary">저장</button>
-    </div>
-  </form>
-</div>
-
 <div class="toast" id="toast"></div>
 
 <script>
 (function(){
 'use strict';
-const KEY = 'readingTracker.v1';
 const STATUS = {plan:'읽을 예정', reading:'읽는 중', done:'완독', stop:'중단'};
 const STATUS_ORDER = {reading:0, plan:1, done:2, stop:3};
 const $ = s => document.querySelector(s);
 
-let data = load();
-let editingId = null;
+let data = {version:1, books:[], logs:[]};
 let weekOffset = 0; // 0 = 이번 주
 
-function load(){
-  try{
-    const d = JSON.parse(localStorage.getItem(KEY));
-    if(d && Array.isArray(d.books) && Array.isArray(d.logs)) return d;
-  }catch(e){}
-  return {version:1, books:[], logs:[]};
-}
-function save(){ localStorage.setItem(KEY, JSON.stringify(data)); }
-function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
 function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),1800); }
 
@@ -296,9 +241,11 @@ function computeLogs(){
   }
   return {pagesById, cur, sorted};
 }
+function hasTotal(b){ return Number(b.totalPages)>0; }
 function currentPage(book, cur){
-  const total=book.totalPages||0;
   let p=cur[book.id]||0;
+  if(!hasTotal(book)) return p;
+  const total=book.totalPages;
   if(book.status==='done' && p<total) p=total;
   return Math.min(p,total);
 }
@@ -309,7 +256,7 @@ function pagesInRange(start,end,pagesById){ // [start,end) Date
 }
 
 // ---- 렌더링 ----
-function render(){ const c=computeLogs(); renderSummary(c); renderBooks(c); renderLogBookOptions(); renderWeek(c); renderChart(c); updateLogHint(c); }
+function render(){ const c=computeLogs(); renderSummary(c); renderBooks(c); renderWeek(c); renderChart(c); }
 
 function renderSummary(c){
   const y=String(new Date().getFullYear());
@@ -329,33 +276,22 @@ function renderBooks(c){
     (!q || [b.title,b.author,b.memo].join(' ').toLowerCase().includes(q)))
     .sort((a,b)=> STATUS_ORDER[a.status]-STATUS_ORDER[b.status] || (b.created||0)-(a.created||0));
   const el=$('#bookList');
-  if(!data.books.length){ el.innerHTML='<div class="empty">아직 등록된 책이 없어요.<br>“+ 책 추가”로 첫 책을 등록해 보세요 📖</div>'; return; }
+  if(!data.books.length){ el.innerHTML='<div class="empty">아직 등록된 책이 없어요.</div>'; return; }
   if(!list.length){ el.innerHTML='<div class="empty">조건에 맞는 책이 없어요.</div>'; return; }
   el.innerHTML=list.map(b=>{
-    const p=currentPage(b,c.cur); const pct=b.totalPages?Math.round(p/b.totalPages*100):0;
+    const p=currentPage(b,c.cur); const known=hasTotal(b); const pct=known?Math.round(p/b.totalPages*100):0;
     const dates=[b.startDate?'시작 '+b.startDate:'', b.endDate?'완독 '+b.endDate:''].filter(Boolean).join(' · ');
     const stars=b.rating?`<span class="stars">${'★'.repeat(b.rating)}${'☆'.repeat(5-b.rating)}</span>`:'';
     return `<div class="book" data-id="${b.id}">
       <div>
         <div class="title">${esc(b.title)}<span class="badge s-${b.status}">${STATUS[b.status]}</span></div>
-        <div class="meta">${b.author?esc(b.author)+' · ':''}${b.totalPages}쪽${dates?' · '+dates:''} ${stars}</div>
+        <div class="meta">${b.author?esc(b.author)+' · ':''}${known?b.totalPages+'쪽':'총 페이지 미입력'}${dates?' · '+dates:''} ${stars}</div>
         ${b.memo?`<div class="memo">${esc(b.memo)}</div>`:''}
       </div>
-      <div class="actions">
-        <button class="btn small" data-act="edit">수정</button>
-        <button class="btn small danger" data-act="del">삭제</button>
-      </div>
-      <div class="progress"><div class="bar"><i style="width:${pct}%"></i></div><span class="pct">${p} / ${b.totalPages}쪽 (${pct}%)</span></div>
+      ${known?`<div class="progress"><div class="bar"><i style="width:${pct}%"></i></div><span class="pct">${p} / ${b.totalPages}쪽 (${pct}%)</span></div>`
+        :`<div class="nototal"><b>${p}쪽 읽음</b> · 총 페이지 미입력</div>`}
     </div>`;
   }).join('');
-}
-
-function renderLogBookOptions(){
-  const sel=$('#logBook'); const prev=sel.value;
-  const books=[...data.books].sort((a,b)=>STATUS_ORDER[a.status]-STATUS_ORDER[b.status]||a.title.localeCompare(b.title,'ko'));
-  sel.innerHTML=books.length? books.map(b=>`<option value="${b.id}">${esc(b.title)}${b.status!=='reading'?' ('+STATUS[b.status]+')':''}</option>`).join('')
-    : '<option value="">먼저 책을 추가해 주세요</option>';
-  if(prev && data.books.some(b=>b.id===prev)) sel.value=prev;
 }
 
 function viewedMonday(){ return addDays(mondayOf(new Date()), weekOffset*7); }
@@ -364,10 +300,11 @@ function viewedMonday(){ return addDays(mondayOf(new Date()), weekOffset*7); }
 function pageAsOf(book,endStr){
   let p=0;
   for(const l of data.logs) if(l.bookId===book.id && l.date<endStr && l.to>p) p=l.to;
+  if(!hasTotal(book)) return p;
   if(book.status==='done' && book.endDate && book.endDate<endStr) p=book.totalPages;
-  return Math.min(p,book.totalPages||0);
+  return Math.min(p,book.totalPages);
 }
-function pctOf(book,p){ return book.totalPages?Math.round(p/book.totalPages*100):0; }
+function pctOf(book,p){ return hasTotal(book)?Math.round(p/book.totalPages*100):null; }
 function chartW(sel){ const w=$(sel).clientWidth; return w>0?Math.max(300,Math.min(900,w)):600; }
 const LINE_COLORS=['#c0703f','#6f9a5b','#d39b3a','#5b7fa3','#a8505a','#8a6bb0','#3f8f8a','#9c7a3c'];
 
@@ -380,18 +317,23 @@ function renderWeek(c){
   // 이 주에 표시할 책: 이 주에 기록이 있는 책 + 읽는 중인 책(이 주 말 기준 시작된 것)
   const shown=data.books.filter(b=> per[b.id] || (b.status==='reading' && (!b.startDate || b.startDate<e)))
     .map(b=>{ const p0=pageAsOf(b,s), p1=pageAsOf(b,e); const a=pctOf(b,p0), z=pctOf(b,p1);
-      return {b,p0,p1,a,z,gain:z-a,pages:per[b.id]?.pages||0}; })
-    .sort((x,y)=> y.gain-x.gain || y.z-x.z);
-  $('#pctList').innerHTML = shown.length ? shown.map(r=>`
+      return {b,p0,p1,a,z,gain:hasTotal(b)?z-a:null,pages:per[b.id]?.pages||0}; })
+    .sort((x,y)=> (y.gain??-1)-(x.gain??-1) || (y.z??-1)-(x.z??-1) || y.pages-x.pages);
+  const wkTxt=weekOffset===0?'이번 주':'이 주';
+  $('#pctList').innerHTML = shown.length ? shown.map(r=> r.z===null ? `
+    <div class="pctrow">
+      <div class="top"><div class="name">${esc(r.b.title)}<span class="pg">${r.p1}쪽 읽음 · 총 페이지 미입력</span></div>
+        <span class="gain${r.pages>0?'':' zero'}">+${r.pages}쪽 ${wkTxt}</span></div>
+    </div>` : `
     <div class="pctrow">
       <div class="top"><div class="name">${esc(r.b.title)}<span class="p">${r.z}%</span><span class="pg">(${r.p1}/${r.b.totalPages}쪽)</span>${r.z>=100?' 🎉':''}</div>
-        <span class="gain${r.gain>0?'':' zero'}">${r.gain>0?'+'+r.gain+'%p':'±0%p'} ${weekOffset===0?'이번 주':'이 주'}</span></div>
+        <span class="gain${r.gain>0?'':' zero'}">${r.gain>0?'+'+r.gain+'%p':'±0%p'} ${wkTxt}</span></div>
       <div class="pbar" title="${r.a}% → ${r.z}%"><div class="base" style="width:${r.a}%"></div><div class="add" style="left:${r.a}%;width:${r.z-r.a}%"></div><div class="ticks"></div></div>
     </div>`).join('') : '<div class="empty">이 주에 진행 중인 책이 없어요.</div>';
   const withPages=shown.filter(r=>r.pages>0||per[r.b.id]);
   const total=logs.reduce((t,l)=>t+c.pagesById[l.id],0);
   $('#weekTable').innerHTML = withPages.length
-    ? withPages.map(r=>`<tr><td>${esc(r.b.title)}</td><td class="num">${r.pages.toLocaleString('ko-KR')}쪽</td><td class="num pc hm">${r.a}%</td><td class="num">${r.z}%</td><td class="num gain">+${r.gain}%p</td></tr>`).join('')
+    ? withPages.map(r=>`<tr><td>${esc(r.b.title)}</td><td class="num">${r.pages.toLocaleString('ko-KR')}쪽</td>${r.z===null?'<td class="num pc hm">—</td><td class="num pc" title="총 페이지 미입력">—</td><td class="num pc">—</td>':`<td class="num pc hm">${r.a}%</td><td class="num">${r.z}%</td><td class="num gain">+${r.gain}%p</td>`}</tr>`).join('')
       + `<tr class="total"><td>주간 합계</td><td class="num" id="weekTotal">${total.toLocaleString('ko-KR')}쪽</td><td class="hm"></td><td></td><td class="num">${logs.length}회 기록</td></tr>`
     : `<tr><td colspan="5" class="empty">이 주에는 기록이 없어요.</td></tr>`;
   const title=id=>{ const b=data.books.find(x=>x.id===id); return b?esc(b.title):'(삭제된 책)'; };
@@ -399,8 +341,7 @@ function renderWeek(c){
     const d=parse(l.date); const wd='일월화수목금토'[d.getDay()];
     const desc=l.mode==='range'?`${l.from}~${l.to}쪽`:`${l.to}쪽까지`;
     return `<div class="row"><div><b>${d.getMonth()+1}/${d.getDate()} (${wd})</b> ${title(l.bookId)} — ${desc} <span style="color:var(--accent)">+${c.pagesById[l.id]}쪽</span>
-      ${l.note?`<div class="note">${esc(l.note)}</div>`:''}</div>
-      <div><button class="btn small danger" data-log="${l.id}">삭제</button></div></div>`;
+      ${l.note?`<div class="note">${esc(l.note)}</div>`:''}</div></div>`;
   }).join('') : '<div class="empty">기록이 없어요.</div>';
   $('#nextWeek').disabled = weekOffset>=0;
   $('#nextWeek').style.opacity = weekOffset>=0?.4:1;
@@ -431,10 +372,12 @@ function renderLineChart(weeks){
   // 대상: 읽는 중인 책 + 이 12주 안에 기록이 있는 책 (최근 활동순, 최대 8권)
   const lastAct={};
   for(const l of data.logs) if(l.date>=first && l.date<last && (!lastAct[l.bookId]||l.date>lastAct[l.bookId])) lastAct[l.bookId]=l.date;
-  const books=data.books.filter(b=>lastAct[b.id] || (b.status==='reading' && (!b.startDate||b.startDate<last)))
+  const books=data.books.filter(b=>hasTotal(b) && (lastAct[b.id] || (b.status==='reading' && (!b.startDate||b.startDate<last))))
     .sort((a,b)=>(lastAct[b.id]||'').localeCompare(lastAct[a.id]||'')).slice(0,8);
   const el=$('#lineChart');
-  if(!books.length){ el.innerHTML='<div class="empty">최근 12주 동안의 기록이 없어요.</div>'; return; }
+  const noTotal=data.books.filter(b=>!hasTotal(b) && (lastAct[b.id]||b.status==='reading'));
+  const note=noTotal.length?`<div class="hint" style="margin-top:8px">총 페이지가 입력되지 않아 % 그래프에서 제외: ${noTotal.map(b=>esc(b.title)).join(', ')}</div>`:'';
+  if(!books.length){ el.innerHTML='<div class="empty">'+(noTotal.length?'총 페이지가 입력된 책이 없어 % 그래프를 그릴 수 없어요.':'최근 12주 동안의 기록이 없어요.')+'</div>'+note; return; }
   const W=chartW('#lineChart'),H=W<500?280:260,L=38,R=12,T=16,B=26, pw=W-L-R, ph=H-T-B, N=weeks.length;
   const X=i=>L+pw*(N===1?0.5:i/(N-1)), Y=p=>T+ph*(1-p/100);
   let svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="최근 12주 책별 진척도(%) 선 그래프">`;
@@ -450,6 +393,7 @@ function renderLineChart(weeks){
       if(finished) return;
       const pct=pctOf(b,pageAsOf(b,w.end));
       if(!started && pct===0 && !(b.startDate && b.startDate<w.end)) return;
+      if(!started && i>0 && pct>0) pts.push([X(i-1),Y(0),0,weeks[i-1]]); // 시작 전 주 0%에서 출발
       started=true; pts.push([X(i),Y(pct),pct,w]);
       if(pct>=100) finished=true;
     });
@@ -465,87 +409,12 @@ function renderLineChart(weeks){
   endLabels.sort((a,b)=>a.y-b.y);
   for(let i=1;i<endLabels.length;i++){ const p=endLabels[i-1],q=endLabels[i]; if(Math.abs(p.x-q.x)<34 && q.y-p.y<13) q.y=p.y+13; }
   endLabels.forEach(l=>{ l.y=Math.max(T+4,l.y); svg+=`<text class="v" x="${l.x}" y="${l.y}" style="fill:${l.col}">${l.t}</text>`; });
-  el.innerHTML=svg+'</svg><div class="lc-legend">'+legend.join('')+'</div>';
+  el.innerHTML=svg+'</svg><div class="lc-legend">'+legend.join('')+'</div>'+note;
 }
 
-function updateLogHint(c){
-  c=c||computeLogs();
-  const b=data.books.find(x=>x.id===$('#logBook').value);
-  $('#logHint').textContent = b ? `현재 ${currentPage(b,c.cur)} / ${b.totalPages}쪽` : '';
-}
-
-// ---- 책 모달 ----
-function openBook(id){
-  editingId=id||null; const b=id?data.books.find(x=>x.id===id):null;
-  $('#bookModalTitle').textContent=b?'책 정보 수정':'책 추가';
-  $('#fTitle').value=b?.title||''; $('#fAuthor').value=b?.author||''; $('#fPages').value=b?.totalPages||'';
-  $('#fStatus').value=b?.status||'reading'; $('#fRating').value=b?.rating||'';
-  $('#fStart').value=b?.startDate||(b?'':today()); $('#fEnd').value=b?.endDate||''; $('#fMemo').value=b?.memo||'';
-  $('#bookModal').classList.remove('hidden'); setTimeout(()=>$('#fTitle').focus(),30);
-}
-function closeBook(){ $('#bookModal').classList.add('hidden'); editingId=null; }
-
-$('#addBookBtn').onclick=()=>openBook();
-$('#cancelBook').onclick=closeBook;
-$('#bookModal').addEventListener('click',e=>{ if(e.target.id==='bookModal') closeBook(); });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeBook(); });
-$('#bookForm').addEventListener('submit',e=>{
-  e.preventDefault();
-  const vals={ title:$('#fTitle').value.trim(), author:$('#fAuthor').value.trim(), totalPages:parseInt($('#fPages').value,10)||0,
-    status:$('#fStatus').value, rating:parseInt($('#fRating').value,10)||null, startDate:$('#fStart').value, endDate:$('#fEnd').value, memo:$('#fMemo').value.trim() };
-  if(!vals.title||vals.totalPages<1){ toast('제목과 총 페이지 수를 입력해 주세요'); return; }
-  if(vals.status==='done' && !vals.endDate) vals.endDate=today();
-  if(editingId){ Object.assign(data.books.find(b=>b.id===editingId),vals); toast('수정했어요'); }
-  else { data.books.push({id:uid(),created:Date.now(),...vals}); toast('책을 추가했어요'); }
-  save(); closeBook(); render();
-});
-$('#bookList').addEventListener('click',e=>{
-  const btn=e.target.closest('button[data-act]'); if(!btn) return;
-  const id=btn.closest('.book').dataset.id; const b=data.books.find(x=>x.id===id);
-  if(btn.dataset.act==='edit') openBook(id);
-  if(btn.dataset.act==='del' && confirm(`“${b.title}”을(를) 삭제할까요?\n이 책의 독서 기록도 함께 삭제돼요.`)){
-    data.books=data.books.filter(x=>x.id!==id); data.logs=data.logs.filter(l=>l.bookId!==id); save(); render(); toast('삭제했어요');
-  }
-});
 $('#search').addEventListener('input',()=>renderBooks(computeLogs()));
 $('#statusFilter').addEventListener('change',()=>renderBooks(computeLogs()));
 
-// ---- 기록 폼 ----
-function mode(){ return document.querySelector('input[name=logMode]:checked').value; }
-document.querySelectorAll('input[name=logMode]').forEach(r=>r.addEventListener('change',()=>{
-  const range=mode()==='range';
-  $('#fromWrap').style.display=range?'':'none';
-  $('#toLabel').textContent=range?'끝 페이지':'오늘 도달한 페이지';
-  if(range){ const c=computeLogs(); const b=data.books.find(x=>x.id===$('#logBook').value); if(b && !$('#logFrom').value) $('#logFrom').value=(c.cur[b.id]||0)+1; }
-}));
-$('#logBook').addEventListener('change',()=>{ $('#logFrom').value=''; updateLogHint(); });
-$('#logForm').addEventListener('submit',e=>{
-  e.preventDefault();
-  const b=data.books.find(x=>x.id===$('#logBook').value);
-  if(!b){ toast('먼저 책을 추가해 주세요'); return; }
-  const m=mode(); const to=parseInt($('#logTo').value,10); const from=m==='range'?parseInt($('#logFrom').value,10):null;
-  const date=$('#logDate').value||today();
-  if(!(to>0)){ toast('페이지를 입력해 주세요'); return; }
-  if(m==='range' && !(from>=0 && from<=to)){ toast('페이지 범위를 확인해 주세요'); return; }
-  if(to>b.totalPages){ toast(`총 페이지(${b.totalPages}쪽)보다 클 수 없어요`); return; }
-  data.logs.push({id:uid(),created:Date.now(),date,bookId:b.id,mode:m,from,to,note:$('#logNote').value.trim()});
-  // 상태 자동 갱신
-  if(b.status==='plan'||b.status==='stop'){ b.status='reading'; }
-  if(!b.startDate) b.startDate=date;
-  const c=computeLogs();
-  if(c.cur[b.id]>=b.totalPages && b.status!=='done'){ b.status='done'; b.endDate=b.endDate||date; toast(`🎉 “${b.title}” 완독!`); }
-  else toast('기록했어요');
-  save();
-  $('#logTo').value=''; $('#logFrom').value=''; $('#logNote').value='';
-  // 기록한 날짜의 주로 이동
-  weekOffset=Math.round((mondayOf(parse(date))-mondayOf(new Date()))/(7*864e5));
-  if(weekOffset>0) weekOffset=0;
-  render();
-});
-$('#weekLogs').addEventListener('click',e=>{
-  const id=e.target.dataset.log; if(!id) return;
-  if(confirm('이 기록을 삭제할까요?')){ data.logs=data.logs.filter(l=>l.id!==id); save(); render(); toast('삭제했어요'); }
-});
 $('#prevWeek').onclick=()=>{ weekOffset--; render(); };
 $('#nextWeek').onclick=()=>{ if(weekOffset<0){ weekOffset++; render(); } };
 $('#thisWeek').onclick=()=>{ weekOffset=0; render(); };
@@ -567,24 +436,22 @@ $('#exportBtn').onclick=()=>{
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
   toast('JSON 파일로 내보냈어요');
 };
-$('#importBtn').onclick=()=>$('#importFile').click();
-$('#importFile').addEventListener('change',e=>{
-  const file=e.target.files[0]; if(!file) return;
-  const r=new FileReader();
-  r.onload=()=>{
-    try{
-      const d=JSON.parse(r.result);
-      if(!d || !Array.isArray(d.books) || !Array.isArray(d.logs)) throw new Error('형식 오류');
-      if(!confirm(`책 ${d.books.length}권, 기록 ${d.logs.length}건을 가져올까요?\n현재 데이터는 덮어써져요.`)) return;
-      data={version:1,books:d.books,logs:d.logs}; save(); weekOffset=0; render(); toast('가져오기 완료!');
-    }catch(err){ alert('올바른 독서 기록 JSON 파일이 아니에요.'); }
-    e.target.value='';
-  };
-  r.readAsText(file);
-});
 
-$('#logDate').value=today();
+// ---- data.json 불러오기 (읽기 전용) ----
+function fmtKST(iso){
+  const d=new Date(iso); if(isNaN(d)) return String(iso);
+  const p=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(d).map(x=>[x.type,x.value]));
+  return `${p.year}-${p.month}-${p.day} ${p.hour==='24'?'00':p.hour}:${p.minute} KST`;
+}
 render();
+fetch('data.json?t='+Date.now(),{cache:'no-store'})
+  .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+  .then(d=>{
+    if(!d || !Array.isArray(d.books) || !Array.isArray(d.logs)) throw new Error('형식 오류');
+    data=d; render();
+    $('#updatedAt').textContent = d.updatedAt ? '마지막 업데이트: '+fmtKST(d.updatedAt) : '';
+  })
+  .catch(err=>{ const u=$('#updatedAt'); u.textContent='기록을 불러오지 못했어요 ('+err.message+'). 잠시 후 새로고침해 주세요.'; u.classList.add('err'); });
 })();
 </script>
 </body>
