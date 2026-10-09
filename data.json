@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-09T15:49:46+09:00",
+  "updatedAt": "2026-10-09T16:24:15+09:00",
   "books": [
     {
       "id": "b1",
@@ -25,6 +25,16 @@
       "mode": "reach",
       "from": null,
       "to": 102,
+      "note": ""
+    },
+    {
+      "id": "l1a11f8c6095",
+      "created": 1791530655893,
+      "date": "2026-10-09",
+      "bookId": "b1",
+      "mode": "reach",
+      "from": null,
+      "to": 113,
       "note": ""
     }
   ]
