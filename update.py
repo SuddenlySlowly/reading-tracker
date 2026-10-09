@@ -6,12 +6,13 @@
   python3 update.py log --book '폭풍이 온다' --from 103 --page 150      # 범위로 기록
   python3 update.py add-book --title '코스모스' --author '칼 세이건' --pages 720 [--status plan|reading|done|stop] [--start YYYY-MM-DD]
   python3 update.py set --book '폭풍이 온다' --pages 344 [--status done] [--author ...] [--rating 5] [--memo ...] [--start ...] [--end ...]
+  python3 update.py set --book '폭풍이 온다' --cover 'https://.../cover.jpg'   # 또는 로컬 파일 경로 → covers/<id>.jpg 로 저장
   python3 update.py undo --book '폭풍이 온다'     # 그 책의 마지막 기록 삭제
   python3 update.py list                           # 현재 상태 보기
 공통 옵션: --no-push (커밋만), --dry-run (파일 저장/커밋 안 함)
 --book 은 제목(정확히 또는 고유한 일부) 또는 id.
 """
-import argparse, json, os, subprocess, sys, time, re
+import argparse, json, os, subprocess, sys, time, re, shutil, urllib.request
 from datetime import datetime, timezone, timedelta
 
 KST = timezone(timedelta(hours=9))
@@ -41,6 +42,33 @@ def save(d):
     d['updatedAt'] = now_kst().isoformat(timespec='seconds')
     with open(DATA, 'w', encoding='utf-8') as f:
         json.dump(d, f, ensure_ascii=False, indent=2); f.write('\n')
+
+
+def fetch_cover(src, book_id):
+    """URL 또는 로컬 경로의 이미지를 covers/<id>.<ext> 로 저장하고 상대 경로를 반환."""
+    if re.match(r'https?://', src):
+        if shutil.which('curl'):  # 일부 이미지 서버는 파이썬 SSL과 호환이 안 돼서 curl 우선
+            r = subprocess.run(['curl', '-sSfL', '--max-time', '30', '-A', 'Mozilla/5.0', src], capture_output=True)
+            if r.returncode: die('표지 다운로드 실패: ' + r.stderr.decode(errors='ignore').strip())
+            raw = r.stdout
+        else:
+            req = urllib.request.Request(src, headers={'User-Agent': 'Mozilla/5.0 (reading-tracker)'})
+            with urllib.request.urlopen(req, timeout=30) as r: raw = r.read()
+    else:
+        if not os.path.isfile(src): die(f'표지 파일이 없어요: {src}')
+        with open(src, 'rb') as f: raw = f.read()
+    if raw[:3] == b'\xff\xd8\xff': ext = 'jpg'
+    elif raw[:8] == b'\x89PNG\r\n\x1a\n': ext = 'png'
+    elif raw[:4] == b'RIFF' and raw[8:12] == b'WEBP': ext = 'webp'
+    elif raw[:6] in (b'GIF87a', b'GIF89a'): ext = 'gif'
+    else: die('이미지 파일이 아니에요 (jpg/png/webp/gif만 가능)')
+    os.makedirs(os.path.join(HERE, 'covers'), exist_ok=True)
+    for old in os.listdir(os.path.join(HERE, 'covers')):
+        if os.path.splitext(old)[0] == book_id: os.remove(os.path.join(HERE, 'covers', old))
+    rel = f'covers/{book_id}.{ext}'
+    with open(os.path.join(HERE, rel), 'wb') as f: f.write(raw)
+    print(f'표지 저장: {rel} ({len(raw) // 1024}KB)')
+    return rel
 
 
 def find_book(d, key):
@@ -76,7 +104,7 @@ def summary(d, b):
 
 def git_commit_push(msg, push=True):
     def run(*a): return subprocess.run(a, cwd=HERE, check=True, capture_output=True, text=True)
-    run('git', 'add', 'data.json')
+    run('git', 'add', '-A', 'data.json', 'covers') if os.path.isdir(os.path.join(HERE, 'covers')) else run('git', 'add', 'data.json')
     if subprocess.run(['git', 'diff', '--cached', '--quiet'], cwd=HERE).returncode == 0:
         print('변경 사항 없음'); return
     run('git', '-c', f'user.name={AUTHOR[0]}', '-c', f'user.email={AUTHOR[1]}', 'commit', '-m', msg)
@@ -98,11 +126,12 @@ def main():
     a = sp.add_parser('add-book', help='책 추가')
     a.add_argument('--title', required=True); a.add_argument('--author', default='')
     a.add_argument('--pages', type=int); a.add_argument('--status', default='reading')
-    a.add_argument('--start', type=valid_date); a.add_argument('--memo', default='')
+    a.add_argument('--start', type=valid_date); a.add_argument('--memo', default=''); a.add_argument('--cover', help='표지 이미지 URL 또는 파일 경로')
     s = sp.add_parser('set', help='책 정보 수정')
     s.add_argument('--book', required=True); s.add_argument('--title'); s.add_argument('--author')
     s.add_argument('--pages', type=int); s.add_argument('--status'); s.add_argument('--rating', type=int)
     s.add_argument('--start', type=valid_date); s.add_argument('--end', type=valid_date); s.add_argument('--memo')
+    s.add_argument('--cover', help='표지 이미지 URL 또는 파일 경로 ("" = 표지 제거)')
     u = sp.add_parser('undo', help='책의 마지막 기록 삭제'); u.add_argument('--book', required=True)
     sp.add_parser('list', help='현재 상태 보기')
     for p in (g, a, s, u):  # 하위 명령 뒤에도 공통 옵션 허용
@@ -138,12 +167,19 @@ def main():
         b = {'id': f'b{n}', 'title': args.title, 'author': args.author, 'totalPages': args.pages, 'status': st,
              'startDate': args.start or (today() if st == 'reading' else ''), 'endDate': today() if st == 'done' else '',
              'rating': None, 'memo': args.memo, 'created': int(time.time() * 1000)}
+        if args.cover and not args.dry_run: b['cover'] = fetch_cover(args.cover, b['id'])
         d['books'].append(b); commit = f"책 추가: {b['title']}"
     elif args.cmd == 'set':
         b = find_book(d, args.book)
         for k, attr in (('title', 'title'), ('author', 'author'), ('pages', 'totalPages'), ('start', 'startDate'), ('end', 'endDate'), ('memo', 'memo')):
             v = getattr(args, k)
             if v is not None: b[attr] = (v if v > 0 else None) if k == 'pages' else v
+        if args.cover is not None and not args.dry_run:
+            if args.cover == '':
+                b.pop('cover', None)
+                for old in (os.listdir(os.path.join(HERE, 'covers')) if os.path.isdir(os.path.join(HERE, 'covers')) else []):
+                    if os.path.splitext(old)[0] == b['id']: os.remove(os.path.join(HERE, 'covers', old))
+            else: b['cover'] = fetch_cover(args.cover, b['id'])
         if args.rating is not None:
             if not 0 <= args.rating <= 5: die('별점은 1~5 (0은 지우기)')
             b['rating'] = args.rating or None

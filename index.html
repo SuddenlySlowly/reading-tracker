@@ -9,112 +9,114 @@
 :root{
   --bg:#faf6ef; --card:#fffdf9; --ink:#3b2f27; --muted:#8a7a6c; --line:#eadfce;
   --accent:#c0703f; --accent-soft:#f6e2d3; --green:#6f9a5b; --blue:#5b7fa3; --gray:#9c948b; --amber:#d39b3a;
-  --radius:14px; --shadow:0 2px 10px rgba(80,55,30,.07);
+  --radius:16px; --shadow:0 2px 10px rgba(80,55,30,.07);
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif;line-height:1.55;font-size:15px}
-.wrap{max-width:960px;margin:0 auto;padding:20px 16px 60px}
-header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}
-h1{font-size:1.5rem;margin:0;letter-spacing:-.5px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif;line-height:1.5;font-size:15px;-webkit-text-size-adjust:100%}
+.wrap{max-width:780px;margin:0 auto;padding:18px 14px 60px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px}
+h1{font-size:1.45rem;margin:0;letter-spacing:-.5px}
 h1 span{color:var(--accent)}
-h2{font-size:1.15rem;margin:0 0 12px}
-.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 14px;font:inherit;font-size:.92rem;cursor:pointer;transition:.15s}
-.btn:hover{border-color:var(--accent);color:var(--accent)}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.btn.primary:hover{filter:brightness(1.07);color:#fff}
-.btn.small{padding:4px 10px;font-size:.82rem}
-.btn.danger:hover{border-color:#b84a3a;color:#b84a3a}
-.tools{display:flex;gap:8px;flex-wrap:wrap}
-.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
-.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
-.stat .label{color:var(--muted);font-size:.85rem}
-.stat .value{font-size:1.7rem;font-weight:700;color:var(--accent)}
-.stat .value small{font-size:.9rem;color:var(--muted);font-weight:500;margin-left:2px}
-.tabs{display:flex;gap:6px;margin-bottom:14px;border-bottom:1px solid var(--line)}
-.tab{background:none;border:none;font:inherit;padding:10px 16px;cursor:pointer;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-1px;font-weight:600}
-.tab.active{color:var(--accent);border-color:var(--accent)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
-.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
-input,select,textarea{font:inherit;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:9px;padding:8px 10px;width:100%}
-input:focus,select:focus,textarea:focus{outline:2px solid var(--accent-soft);border-color:var(--accent)}
-.filters input{flex:1;min-width:160px}
-.filters select{width:auto}
-.book{display:grid;grid-template-columns:1fr auto;gap:6px 12px;padding:14px 0;border-top:1px dashed var(--line)}
-.book:first-child{border-top:none}
-.book .title{font-weight:700;font-size:1.05rem}
-.book .meta{color:var(--muted);font-size:.85rem}
-.book .memo{font-size:.88rem;color:#5d4f44;background:var(--bg);border-radius:8px;padding:6px 10px;margin-top:6px;white-space:pre-wrap}
-.book .actions{display:flex;gap:6px;align-items:flex-start}
-.badge{display:inline-block;font-size:.75rem;padding:2px 8px;border-radius:99px;color:#fff;margin-left:6px;vertical-align:2px;font-weight:600}
-.s-plan{background:var(--blue)} .s-reading{background:var(--amber)} .s-done{background:var(--green)} .s-stop{background:var(--gray)}
-.stars{color:#e0a43a;letter-spacing:1px}
-.progress{grid-column:1/-1;display:flex;align-items:center;gap:10px}
-.bar{flex:1;height:10px;background:#f0e6d8;border-radius:99px;overflow:hidden}
-.bar > i{display:block;height:100%;background:linear-gradient(90deg,#d99260,var(--accent));border-radius:99px}
-.progress .pct{font-size:.82rem;color:var(--muted);min-width:110px;text-align:right}
-.empty{color:var(--muted);text-align:center;padding:24px 8px}
-.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.field label{display:block;font-size:.83rem;color:var(--muted);margin-bottom:3px}
-.full{grid-column:1/-1}
-.weeknav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
-.weeknav .wk{font-weight:700;font-size:1.05rem;text-align:center}
-.weeknav .btn{white-space:nowrap}
-@media (max-width:480px){.weeknav .wk{font-size:.92rem}.weeknav .btn{padding:4px 8px}}
-table{width:100%;border-collapse:collapse}
-th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;font-size:.92rem}
-th{color:var(--muted);font-weight:600;font-size:.82rem}
-td.num,th.num{text-align:right;white-space:nowrap}
-tr.total td{font-weight:700;color:var(--accent);border-bottom:none}
-.chart svg{width:100%;height:auto;display:block}
-.chart .barrect{fill:#e8c4a6;cursor:pointer}
-.chart .barrect.cur{fill:var(--accent)}
-.chart text{font-size:10px;fill:var(--muted);font-family:inherit}
-.chart text.v{fill:var(--ink);font-weight:600}
-.pctlist{display:flex;flex-direction:column;gap:14px;margin:6px 0 18px}
-.pctrow .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:5px;flex-wrap:wrap}
-.pctrow .name{font-weight:700}
-.pctrow .name .p{color:var(--accent);margin-left:4px}
-.pctrow .name .pg{color:var(--muted);font-weight:500;font-size:.85rem;margin-left:4px}
-.pctrow .gain{font-size:.82rem;font-weight:700;color:var(--green);background:#e9f1e3;border-radius:99px;padding:2px 9px;white-space:nowrap}
-.pctrow .gain.zero{color:var(--muted);background:#f1ece5}
-.pbar{position:relative;height:22px;background:#f0e6d8;border-radius:8px;overflow:hidden}
-.pbar .base{position:absolute;left:0;top:0;bottom:0;background:#d9a27c}
-.pbar .add{position:absolute;top:0;bottom:0;background:var(--accent)}
-.pbar .ticks{position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 calc(25% - 1px),rgba(255,255,255,.7) calc(25% - 1px) 25%)}
-.plegend{display:flex;gap:14px;font-size:.8rem;color:var(--muted);margin-bottom:4px;flex-wrap:wrap}
-.plegend i{display:inline-block;width:12px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
-.lc-legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:8px;font-size:.85rem}
-.lc-legend span{display:flex;align-items:center;gap:6px}
-.lc-legend i{width:14px;height:4px;border-radius:2px;display:inline-block}
-.chart.small h2{font-size:1rem}
-.subhead{font-size:.95rem;margin:4px 0 8px;color:var(--ink)}
-td.pc{color:var(--muted)} td.gain{color:var(--green);font-weight:700}
-@media (max-width:640px){ th.hm,td.hm{display:none} th,td{padding:7px 4px;font-size:.84rem} }
-.logs .row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px dashed var(--line);font-size:.9rem}
-.logs .row:first-child{border-top:none}
-.logs .note{color:var(--muted);font-size:.83rem}
-.modeswitch{display:flex;gap:14px;font-size:.88rem;align-items:center;flex-wrap:wrap}
-.modeswitch label{display:flex;gap:4px;align-items:center;cursor:pointer}
-.modeswitch input{width:auto}
-.hidden{display:none!important}
-.overlay{position:fixed;inset:0;background:rgba(50,35,20,.35);display:flex;align-items:flex-start;justify-content:center;padding:30px 12px;overflow:auto;z-index:10}
-.modal{background:var(--card);border-radius:var(--radius);padding:20px;max-width:560px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.2)}
-.modal .foot{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:99px;font-size:.9rem;opacity:0;transition:.3s;pointer-events:none;z-index:20}
-.toast.show{opacity:.92}
-.hint{font-size:.8rem;color:var(--muted);margin-top:4px}
-.updated{font-size:.82rem;color:var(--muted);margin:-8px 0 14px}
+h2{font-size:1.12rem;margin:0 0 10px;letter-spacing:-.3px}
+.sec-title{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:22px 2px 10px}
+.sec-title h2{margin:0}
+.sec-title small{color:var(--muted);font-size:.8rem}
+.updated{font-size:.8rem;color:var(--muted);margin:4px 2px 14px}
 .updated.err{color:#b84a3a}
-.nototal{grid-column:1/-1;font-size:.85rem;color:var(--muted)}
-.nototal b{color:var(--accent)}
-@media (max-width:640px){
-  .summary{grid-template-columns:repeat(3,1fr);gap:8px}
-  .stat{padding:10px}
-  .stat .value{font-size:1.3rem}
-  .stat .label{font-size:.75rem}
-  .grid2{grid-template-columns:1fr}
-  .book{grid-template-columns:1fr}
-  .progress .pct{min-width:auto}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:7px 12px;font:inherit;font-size:.88rem;cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.small{padding:4px 9px;font-size:.8rem}
+.btn:disabled{opacity:.4;cursor:default}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;box-shadow:var(--shadow)}
+.stat .label{color:var(--muted);font-size:.74rem}
+.stat .value{font-size:1.35rem;font-weight:800;color:var(--accent)}
+.stat .value small{font-size:.8rem;color:var(--muted);font-weight:500;margin-left:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);margin-bottom:12px}
+.empty{color:var(--muted);text-align:center;padding:20px 8px;font-size:.9rem}
+.hint{font-size:.78rem;color:var(--muted)}
+/* charts */
+.chart svg{width:100%;height:auto;display:block}
+.chart text{font-size:10px;fill:var(--muted);font-family:inherit}
+.chart text.v{fill:var(--ink);font-weight:700}
+.chart text.cur{fill:var(--accent);font-weight:700}
+.chart g[data-off]{cursor:pointer}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:8px;font-size:.8rem;color:#5d4f44}
+.legend span{display:flex;align-items:center;gap:5px}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.legend i.line{height:4px;width:14px;border-radius:2px}
+/* book progress cards */
+.pcard{display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:start}
+.cover{width:96px;aspect-ratio:2/3;border-radius:8px;overflow:hidden;box-shadow:0 3px 10px rgba(60,40,20,.22);background:#eee;position:relative}
+.cover img{width:100%;height:100%;object-fit:cover;display:block}
+.cover.ph{display:flex;flex-direction:column;justify-content:space-between;padding:10px 8px;color:#fff}
+.cover.ph::before{content:"";position:absolute;left:6px;top:0;bottom:0;width:2px;background:rgba(255,255,255,.35)}
+.cover.ph .t{font-family:"Noto Serif CJK KR","Nanum Myeongjo",serif;font-weight:700;font-size:.92rem;line-height:1.25;word-break:keep-all;padding-left:4px}
+.cover.ph .a{font-size:.66rem;opacity:.9;padding-left:4px}
+.pinfo .title{font-weight:800;font-size:1.08rem;line-height:1.3;word-break:keep-all}
+.pinfo .meta{color:var(--muted);font-size:.82rem;margin-top:2px}
+.badge{display:inline-block;font-size:.7rem;padding:1px 8px;border-radius:99px;color:#fff;margin-left:6px;vertical-align:2px;font-weight:700}
+.s-plan{background:var(--blue)} .s-reading{background:var(--amber)} .s-done{background:var(--green)} .s-stop{background:var(--gray)}
+.big{margin-top:10px}
+.big .nums{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
+.big .pct{font-size:1.6rem;font-weight:800;color:var(--accent);line-height:1}
+.big .pg{font-size:.85rem;color:var(--muted)}
+.big .pg b{color:var(--ink)}
+.bar{height:14px;background:#f0e6d8;border-radius:99px;overflow:hidden;position:relative}
+.bar > i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#dd9a6c,var(--accent));border-radius:99px}
+.dates{font-size:.8rem;color:var(--muted);margin-top:6px}
+.stars{color:#e0a43a;letter-spacing:1px}
+.hist{grid-column:1/-1;border-top:1px dashed var(--line);padding-top:8px;margin-top:2px}
+.hist summary{cursor:pointer;font-size:.85rem;font-weight:700;color:#5d4f44;list-style:none}
+.hist summary::-webkit-details-marker{display:none}
+.hist summary::before{content:"▸ ";color:var(--accent)}
+.hist[open] summary::before{content:"▾ "}
+.hrow{display:grid;grid-template-columns:7.2em 1fr 3.6em 3em;gap:8px;align-items:center;font-size:.82rem;padding:5px 0}
+.hrow .wk{color:#5d4f44}
+.hrow .mini{height:8px;background:#f3ebdf;border-radius:99px;position:relative;overflow:hidden}
+.hrow .mini i{position:absolute;top:0;bottom:0;border-radius:99px}
+.hrow .mini i.b{background:#e3c3a8;left:0}
+.hrow .mini i.a{background:var(--accent)}
+.hrow .n{text-align:right;color:var(--accent);font-weight:700}
+.hrow .p{text-align:right;color:var(--muted)}
+.hrow.nt{grid-template-columns:7.2em 1fr 3.6em}
+/* tabs */
+.tabs{display:flex;gap:2px;margin:24px 0 10px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{background:none;border:none;font:inherit;padding:9px 12px;cursor:pointer;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-1px;font-weight:700;white-space:nowrap;font-size:.92rem}
+.tab.active{color:var(--accent);border-color:var(--accent)}
+.hidden{display:none!important}
+.weeknav{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:10px}
+.weeknav .wk{font-weight:800;text-align:center;font-size:.95rem}
+table{width:100%;border-collapse:collapse}
+th,td{padding:7px 4px;border-bottom:1px solid var(--line);text-align:left;font-size:.86rem}
+th{color:var(--muted);font-weight:600;font-size:.76rem}
+td.num,th.num{text-align:right;white-space:nowrap}
+td.pc{color:var(--muted)} td.gain{color:var(--green);font-weight:700}
+tr.total td{font-weight:800;color:var(--accent);border-bottom:none}
+.logs .row{padding:8px 0;border-top:1px dashed var(--line);font-size:.88rem}
+.logs .row:first-child{border-top:none}
+.logs .note{color:var(--muted);font-size:.82rem}
+.filters{display:flex;gap:8px;margin-bottom:8px}
+input,select{font:inherit;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:9px;padding:7px 10px}
+.filters input{flex:1;min-width:0}
+.lrow{display:flex;gap:10px;align-items:center;padding:9px 0;border-top:1px dashed var(--line)}
+.lrow:first-child{border-top:none}
+.lrow .cover{width:38px;flex:none;border-radius:4px;box-shadow:0 1px 4px rgba(60,40,20,.2)}
+.lrow .cover.ph{padding:3px}
+.lrow .cover.ph .t{font-size:.45rem}
+.lrow .cover.ph .a,.lrow .cover.ph::before{display:none}
+.lrow .info{flex:1;min-width:0}
+.lrow .info .t{font-weight:700;font-size:.92rem}
+.lrow .info .m{font-size:.78rem;color:var(--muted)}
+.lrow .mini{height:6px;background:#f0e6d8;border-radius:99px;overflow:hidden;margin-top:4px}
+.lrow .mini i{display:block;height:100%;background:var(--accent)}
+.lrow .r{font-size:.8rem;color:var(--muted);text-align:right;white-space:nowrap}
+.memo{font-size:.8rem;color:#5d4f44;margin-top:4px}
+@media (min-width:600px){
+  .pcard{grid-template-columns:120px 1fr}
+  .cover{width:120px}
+  .stat .value{font-size:1.6rem}
+  .stat .label{font-size:.82rem}
 }
 </style>
 </head>
@@ -122,319 +124,280 @@ td.pc{color:var(--muted)} td.gain{color:var(--green);font-weight:700}
 <div class="wrap">
   <header>
     <h1>📚 나의 <span>독서 기록</span></h1>
-    <div class="tools">
-      <button class="btn" id="exportBtn">내보내기</button>
-    </div>
+    <button class="btn" id="exportBtn" title="data.json 내려받기">내보내기</button>
   </header>
   <div class="updated" id="updatedAt">불러오는 중…</div>
 
   <section class="summary">
     <div class="stat"><div class="label">올해 완독</div><div class="value" id="sumDone">0<small>권</small></div></div>
-    <div class="stat"><div class="label">이번 주 읽은 페이지</div><div class="value" id="sumWeek">0<small>쪽</small></div></div>
+    <div class="stat"><div class="label">이번 주 읽은 쪽</div><div class="value" id="sumWeek">0<small>쪽</small></div></div>
     <div class="stat"><div class="label">읽는 중인 책</div><div class="value" id="sumReading">0<small>권</small></div></div>
   </section>
 
+  <section class="card chart" id="weeklyCard">
+    <div class="sec-title" style="margin:0 0 6px"><h2>주차별 독서량</h2><small>최근 12주 · 쪽수</small></div>
+    <div id="weeklyChart"></div>
+    <div class="legend" id="weeklyLegend"></div>
+  </section>
+
+  <div class="sec-title"><h2>책별 진도표</h2><small id="bookCount"></small></div>
+  <section id="progressCards"></section>
+
   <nav class="tabs">
-    <button class="tab active" data-tab="books">전체 독서 목록</button>
-    <button class="tab" data-tab="weekly">주차별 진척도</button>
+    <button class="tab active" data-tab="week">주간 기록</button>
+    <button class="tab" data-tab="trend">진도 변화(%)</button>
+    <button class="tab" data-tab="list">전체 목록</button>
   </nav>
 
-  <!-- 전체 독서 목록 -->
-  <section id="tab-books">
+  <section id="tab-week">
+    <div class="card">
+      <div class="weeknav">
+        <button class="btn small" id="prevWeek">◀ 이전</button>
+        <div class="wk" id="weekLabel"></div>
+        <button class="btn small" id="nextWeek">다음 ▶</button>
+      </div>
+      <table>
+        <thead><tr><th>책</th><th class="num">읽은 페이지</th><th class="num">주초</th><th class="num">주말</th><th class="num">증가</th></tr></thead>
+        <tbody id="weekTable"></tbody>
+      </table>
+    </div>
+    <div class="card logs"><h2>이 주의 기록</h2><div id="weekLogs"></div></div>
+  </section>
+
+  <section id="tab-trend" class="hidden">
+    <div class="card chart"><h2>최근 12주 진도 변화 (%)</h2><div id="lineChart"></div></div>
+  </section>
+
+  <section id="tab-list" class="hidden">
     <div class="card">
       <div class="filters">
         <input type="search" id="search" placeholder="제목·저자·메모 검색">
         <select id="statusFilter">
-          <option value="all">전체 상태</option>
+          <option value="all">전체</option>
           <option value="reading">읽는 중</option>
-          <option value="plan">읽을 예정</option>
           <option value="done">완독</option>
+          <option value="plan">읽을 예정</option>
           <option value="stop">중단</option>
         </select>
       </div>
       <div id="bookList"></div>
     </div>
   </section>
-
-  <!-- 주차별 진척도 -->
-    <section id="tab-weekly" class="hidden">
-    <div class="card">
-      <div class="weeknav">
-        <button class="btn small" id="prevWeek">◀ 이전 주</button>
-        <div class="wk" id="weekLabel"></div>
-        <button class="btn small" id="nextWeek">다음 주 ▶</button>
-      </div>
-      <div style="text-align:center;margin-bottom:8px"><button class="btn small" id="thisWeek">이번 주로</button></div>
-      <h3 class="subhead">책별 진척도 (주말 기준, 전체 페이지 대비)</h3>
-      <div class="plegend"><span><i style="background:#d9a27c"></i>지난주까지</span><span><i style="background:var(--accent)"></i>이번 주 읽음</span></div>
-      <div class="pctlist" id="pctList"></div>
-      <table>
-        <thead><tr><th>책</th><th class="num">읽은 페이지</th><th class="num hm">주초 %</th><th class="num">주말 %</th><th class="num">증가</th></tr></thead>
-        <tbody id="weekTable"></tbody>
-      </table>
-    </div>
-
-    <div class="card chart">
-      <h2>최근 12주 진척도 변화 (%)</h2>
-      <div id="lineChart"></div>
-    </div>
-
-    <div class="card chart small">
-      <h2>주별 읽은 페이지</h2>
-      <div id="chart"></div>
-    </div>
-
-    <div class="card logs">
-      <h2>이 주의 기록</h2>
-      <div id="weekLogs"></div>
-    </div>
-  </section>
 </div>
-
-<div class="toast" id="toast"></div>
 
 <script>
 (function(){
 'use strict';
-const STATUS = {plan:'읽을 예정', reading:'읽는 중', done:'완독', stop:'중단'};
-const STATUS_ORDER = {reading:0, plan:1, done:2, stop:3};
-const $ = s => document.querySelector(s);
+const STATUS={plan:'읽을 예정',reading:'읽는 중',done:'완독',stop:'중단'};
+const ORDER={reading:0,done:1,plan:2,stop:3};
+const COLORS=['#c0703f','#6f9a5b','#d39b3a','#5b7fa3','#a8505a','#8a6bb0','#3f8f8a','#9c7a3c'];
+const $=s=>document.querySelector(s);
+let data={version:1,books:[],logs:[]};
+let weekOffset=0;
 
-let data = {version:1, books:[], logs:[]};
-let weekOffset = 0; // 0 = 이번 주
-
-function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),1800); }
-
-// ---- 날짜 유틸 (로컬 날짜, YYYY-MM-DD) ----
-function pad(n){ return String(n).padStart(2,'0'); }
-function ymd(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
-function parse(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
-function today(){ return ymd(new Date()); }
-function mondayOf(d){ const x=new Date(d.getFullYear(),d.getMonth(),d.getDate()); const wd=(x.getDay()+6)%7; x.setDate(x.getDate()-wd); return x; }
-function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const parse=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);};
+const today=()=>ymd(new Date());
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x;};
+function mondayOf(d){const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()-(x.getDay()+6)%7);return x;}
 function isoWeek(d){
-  const t=new Date(d.getFullYear(),d.getMonth(),d.getDate());
-  t.setDate(t.getDate()+3-((t.getDay()+6)%7)); // 같은 주의 목요일
-  const y=t.getFullYear();
-  const w1=new Date(y,0,4);
-  const week=1+Math.round(((t-w1)/864e5 - 3 + ((w1.getDay()+6)%7))/7);
-  return {year:y, week};
+  const t=new Date(d.getFullYear(),d.getMonth(),d.getDate()); t.setDate(t.getDate()+3-((t.getDay()+6)%7));
+  const y=t.getFullYear(), w1=new Date(y,0,4);
+  return {year:y,week:1+Math.round(((t-w1)/864e5-3+((w1.getDay()+6)%7))/7)};
 }
-function weekLabel(mon){
-  const sun=addDays(mon,6); const {year,week}=isoWeek(mon);
-  return `${year}년 ${week}주차 (${mon.getMonth()+1}/${mon.getDate()}~${sun.getMonth()+1}/${sun.getDate()})`;
-}
-function shortWeek(mon){ return `${mon.getMonth()+1}/${mon.getDate()}`; }
+const md=d=>`${d.getMonth()+1}/${d.getDate()}`;
+function weekLabel(mon){const {year,week}=isoWeek(mon);return `${year}년 ${week}주차 (${md(mon)}~${md(addDays(mon,6))})`;}
+const fmtDate=s=>s?s.replace(/^(\d{4})-0?(\d+)-0?(\d+)$/,'$1.$2.$3'):'';
+const nf=n=>n.toLocaleString('ko-KR');
 
-// ---- 기록 계산 ----
-// 각 기록의 '읽은 페이지 수'와 책별 현재 페이지를 계산
+// ---- 계산 ----
+const hasTotal=b=>Number(b.totalPages)>0;
+const colorOf=b=>COLORS[Math.max(0,data.books.indexOf(b))%COLORS.length];
 function computeLogs(){
-  const sorted=[...data.logs].sort((a,b)=> a.date<b.date?-1:a.date>b.date?1:(a.created||0)-(b.created||0));
-  const cur={}; const pagesById={};
+  const sorted=[...data.logs].sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:(a.created||0)-(b.created||0));
+  const cur={},pagesById={};
   for(const l of sorted){
-    const prev=cur[l.bookId]||0; let p;
-    if(l.mode==='range') p=Math.max(0,(l.to-l.from)+1);
-    else p=Math.max(0,l.to-prev);
-    pagesById[l.id]=p;
+    const prev=cur[l.bookId]||0;
+    pagesById[l.id]=l.mode==='range'?Math.max(0,l.to-l.from+1):Math.max(0,l.to-prev);
     cur[l.bookId]=Math.max(prev,l.to);
   }
-  return {pagesById, cur, sorted};
+  return {sorted,cur,pagesById};
 }
-function hasTotal(b){ return Number(b.totalPages)>0; }
-function currentPage(book, cur){
-  let p=cur[book.id]||0;
-  if(!hasTotal(book)) return p;
-  const total=book.totalPages;
-  if(book.status==='done' && p<total) p=total;
-  return Math.min(p,total);
+function pageAsOf(b,endStr){ // endStr 미포함
+  let p=0; for(const l of data.logs) if(l.bookId===b.id&&l.date<endStr&&l.to>p) p=l.to;
+  if(!hasTotal(b)) return p;
+  if(b.status==='done'&&b.endDate&&b.endDate<endStr) p=b.totalPages;
+  return Math.min(p,b.totalPages);
 }
-function pagesInRange(start,end,pagesById){ // [start,end) Date
-  const s=ymd(start), e=ymd(end); let sum=0;
-  for(const l of data.logs) if(l.date>=s && l.date<e) sum+=pagesById[l.id]||0;
-  return sum;
+const pageNow=b=>pageAsOf(b,'9999-99-99');
+const pctOf=(b,p)=>hasTotal(b)?Math.round(p/b.totalPages*100):null;
+function weekPagesByBook(s,e,c){const r={};for(const l of data.logs) if(l.date>=s&&l.date<e) r[l.bookId]=(r[l.bookId]||0)+(c.pagesById[l.id]||0);return r;}
+function lastActivity(b){let d='';for(const l of data.logs) if(l.bookId===b.id&&l.date>d) d=l.date;return d||b.endDate||b.startDate||'';}
+const sortedBooks=()=>[...data.books].sort((a,b)=>ORDER[a.status]-ORDER[b.status]||lastActivity(b).localeCompare(lastActivity(a)));
+function chartW(sel){const w=$(sel).clientWidth;return w>0?Math.max(280,Math.min(760,w)):600;}
+
+function coverHTML(b){
+  if(b.cover) return `<div class="cover"><img src="${esc(b.cover)}" alt="${esc(b.title)} 표지" loading="lazy" onerror="this.parentNode.replaceWith(window.__ph(this.dataset.id))" data-id="${esc(b.id)}"></div>`;
+  return phHTML(b);
 }
+function phHTML(b){const c=colorOf(b);return `<div class="cover ph" style="background:linear-gradient(160deg,${c},${shade(c,-28)})"><div class="t">${esc(b.title)}</div><div class="a">${esc(b.author||'')}</div></div>`;}
+window.__ph=id=>{const b=data.books.find(x=>x.id===id);const t=document.createElement('div');t.innerHTML=phHTML(b||{title:'',author:''});return t.firstChild;};
+function shade(hex,amt){const n=parseInt(hex.slice(1),16);const f=v=>Math.max(0,Math.min(255,v+amt));return '#'+[f(n>>16),f((n>>8)&255),f(n&255)].map(v=>v.toString(16).padStart(2,'0')).join('');}
 
 // ---- 렌더링 ----
-function render(){ const c=computeLogs(); renderSummary(c); renderBooks(c); renderWeek(c); renderChart(c); }
+function render(){const c=computeLogs();renderSummary(c);renderWeekly(c);renderCards(c);renderWeek(c);renderLine();renderList();}
 
 function renderSummary(c){
-  const y=String(new Date().getFullYear());
-  const done=data.books.filter(b=>b.status==='done' && (b.endDate||'').startsWith(y)).length;
-  const mon=mondayOf(new Date());
-  const wk=pagesInRange(mon,addDays(mon,7),c.pagesById);
-  const reading=data.books.filter(b=>b.status==='reading').length;
-  $('#sumDone').innerHTML=done+'<small>권</small>';
-  $('#sumWeek').innerHTML=wk.toLocaleString('ko-KR')+'<small>쪽</small>';
-  $('#sumReading').innerHTML=reading+'<small>권</small>';
+  const y=String(new Date().getFullYear()), mon=mondayOf(new Date());
+  const wk=Object.values(weekPagesByBook(ymd(mon),ymd(addDays(mon,7)),c)).reduce((a,b)=>a+b,0);
+  $('#sumDone').innerHTML=data.books.filter(b=>b.status==='done'&&(b.endDate||'').startsWith(y)).length+'<small>권</small>';
+  $('#sumWeek').innerHTML=nf(wk)+'<small>쪽</small>';
+  $('#sumReading').innerHTML=data.books.filter(b=>b.status==='reading').length+'<small>권</small>';
 }
 
-function renderBooks(c){
-  const q=$('#search').value.trim().toLowerCase();
-  const f=$('#statusFilter').value;
-  const list=data.books.filter(b=> (f==='all'||b.status===f) &&
-    (!q || [b.title,b.author,b.memo].join(' ').toLowerCase().includes(q)))
-    .sort((a,b)=> STATUS_ORDER[a.status]-STATUS_ORDER[b.status] || (b.created||0)-(a.created||0));
-  const el=$('#bookList');
-  if(!data.books.length){ el.innerHTML='<div class="empty">아직 등록된 책이 없어요.</div>'; return; }
-  if(!list.length){ el.innerHTML='<div class="empty">조건에 맞는 책이 없어요.</div>'; return; }
-  el.innerHTML=list.map(b=>{
-    const p=currentPage(b,c.cur); const known=hasTotal(b); const pct=known?Math.round(p/b.totalPages*100):0;
-    const dates=[b.startDate?'시작 '+b.startDate:'', b.endDate?'완독 '+b.endDate:''].filter(Boolean).join(' · ');
-    const stars=b.rating?`<span class="stars">${'★'.repeat(b.rating)}${'☆'.repeat(5-b.rating)}</span>`:'';
-    return `<div class="book" data-id="${b.id}">
-      <div>
+function lastWeeks(n){const end=mondayOf(new Date()),w=[];for(let i=n-1;i>=0;i--){const m=addDays(end,-7*i);w.push({mon:m,off:-i,s:ymd(m),e:ymd(addDays(m,7))});}return w;}
+
+// 상단: 주차별 독서량 (책별 누적 막대)
+function renderWeekly(c){
+  const N=12, weeks=lastWeeks(N); weeks.forEach(w=>{w.by=weekPagesByBook(w.s,w.e,c);w.total=Object.values(w.by).reduce((a,b)=>a+b,0);});
+  const W=chartW('#weeklyChart'), H=W<480?190:210, padT=20, padB=22, bw=W/N, max=Math.max(20,...weeks.map(w=>w.total));
+  const ph=H-padT-padB, avg=Math.round(weeks.reduce((a,w)=>a+w.total,0)/N);
+  let svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="최근 12주 주차별 독서량">`;
+  svg+=`<line x1="0" y1="${H-padB}" x2="${W}" y2="${H-padB}" stroke="#e0d3c0"/>`;
+  const used=new Set();
+  weeks.forEach((w,i)=>{
+    const x=i*bw+bw*.16, bwid=bw*.68, cur=w.off===0, sel=w.off===weekOffset;
+    let y=H-padB; svg+=`<g data-off="${w.off}"><title>${weekLabel(w.mon)}: ${w.total}쪽</title><rect x="${i*bw}" y="0" width="${bw}" height="${H}" fill="${sel?'#fbeee3':'transparent'}"/>`;
+    if(!w.total) svg+=`<rect x="${x}" y="${H-padB-2}" width="${bwid}" height="2" rx="1" fill="#eadfce"/>`;
+    for(const b of sortedBooks()){ const p=w.by[b.id]; if(!p) continue; used.add(b);
+      const h=Math.max(2,ph*p/max); y-=h;
+      svg+=`<rect x="${x}" y="${y}" width="${bwid}" height="${h}" fill="${colorOf(b)}" opacity="${cur?1:.72}"><title>${esc(b.title)}: ${p}쪽</title></rect>`; }
+    if(w.total) svg+=`<text class="v${cur?' cur':''}" x="${x+bwid/2}" y="${y-5}" text-anchor="middle">${nf(w.total)}</text>`;
+    const {week}=isoWeek(w.mon);
+    if(cur) svg+=`<text class="cur" x="${x+bwid/2}" y="${H-6}" text-anchor="middle">이번 주</text>`;
+    else if(W>=480||i%2===(N-1)%2) svg+=`<text x="${x+bwid/2}" y="${H-6}" text-anchor="middle">${week}주</text>`;
+    svg+='</g>';
+  });
+  $('#weeklyChart').innerHTML=svg+'</svg>';
+  $('#weeklyLegend').innerHTML=[...used].map(b=>`<span><i style="background:${colorOf(b)}"></i>${esc(b.title)}</span>`).join('')
+    +(avg?`<span style="margin-left:auto;color:var(--muted)">12주 평균 ${nf(avg)}쪽/주</span>`:'');
+}
+
+// 책별 진도표
+function renderCards(c){
+  const el=$('#progressCards'), books=sortedBooks();
+  $('#bookCount').textContent=books.length?`${books.length}권`:'';
+  if(!books.length){el.innerHTML='<div class="card empty">아직 등록된 책이 없어요.</div>';return;}
+  el.innerHTML=books.map(b=>{
+    const p=pageNow(b), pct=pctOf(b,p), known=pct!==null;
+    const stars=b.rating?` <span class="stars">${'★'.repeat(b.rating)}${'☆'.repeat(5-b.rating)}</span>`:'';
+    const dates=[b.startDate?'시작 '+fmtDate(b.startDate):'', b.endDate?'완독 '+fmtDate(b.endDate):(b.status==='reading'&&b.startDate?'완독 —':'')].filter(Boolean).join(' · ');
+    // 주별 기록
+    const wk={};
+    for(const l of c.sorted) if(l.bookId===b.id){const m=ymd(mondayOf(parse(l.date)));wk[m]=(wk[m]||0)+c.pagesById[l.id];}
+    const rows=Object.keys(wk).sort().reverse().slice(0,8).map(m=>{
+      const mon=parse(m), e=ymd(addDays(mon,7)), z=pctOf(b,pageAsOf(b,e)), a=pctOf(b,pageAsOf(b,m)), {week}=isoWeek(mon);
+      const lab=`<span class="wk">${week}주 <span class="hint">${md(mon)}~</span></span>`;
+      if(z===null) return `<div class="hrow nt">${lab}<div class="mini"><i class="a" style="left:0;width:${Math.min(100,wk[m]/Math.max(...Object.values(wk))*100)}%"></i></div><span class="n">+${wk[m]}쪽</span></div>`;
+      return `<div class="hrow">${lab}<div class="mini"><i class="b" style="width:${a}%"></i><i class="a" style="left:${a}%;width:${z-a}%"></i></div><span class="n">+${wk[m]}쪽</span><span class="p">${z}%</span></div>`;
+    }).join('');
+    const nWeeks=Object.keys(wk).length;
+    return `<article class="card pcard" data-id="${esc(b.id)}">
+      ${coverHTML(b)}
+      <div class="pinfo">
         <div class="title">${esc(b.title)}<span class="badge s-${b.status}">${STATUS[b.status]}</span></div>
-        <div class="meta">${b.author?esc(b.author)+' · ':''}${known?b.totalPages+'쪽':'총 페이지 미입력'}${dates?' · '+dates:''} ${stars}</div>
+        <div class="meta">${esc(b.author||'저자 미입력')}${stars}</div>
         ${b.memo?`<div class="memo">${esc(b.memo)}</div>`:''}
+        <div class="big">
+          ${known?`<div class="nums"><span class="pct">${pct}%</span><span class="pg"><b>${nf(p)}</b> / ${nf(b.totalPages)}쪽</span></div>
+          <div class="bar"><i style="width:${pct}%;background:linear-gradient(90deg,${shade(colorOf(b),30)},${colorOf(b)})"></i></div>`
+          :`<div class="nums"><span class="pct" style="font-size:1.25rem">${nf(p)}쪽 읽음</span><span class="pg">총 페이지 미입력</span></div>`}
+        </div>
+        ${dates?`<div class="dates">${dates}</div>`:''}
       </div>
-      ${known?`<div class="progress"><div class="bar"><i style="width:${pct}%"></i></div><span class="pct">${p} / ${b.totalPages}쪽 (${pct}%)</span></div>`
-        :`<div class="nototal"><b>${p}쪽 읽음</b> · 총 페이지 미입력</div>`}
-    </div>`;
+      ${nWeeks?`<details class="hist" ${b.status==='reading'?'open':''}><summary>주별 진도 (${nWeeks}주)</summary>${rows}</details>`:''}
+    </article>`;
   }).join('');
 }
 
-function viewedMonday(){ return addDays(mondayOf(new Date()), weekOffset*7); }
-
-// 특정 시점(end 미포함) 기준 책의 누적 페이지
-function pageAsOf(book,endStr){
-  let p=0;
-  for(const l of data.logs) if(l.bookId===book.id && l.date<endStr && l.to>p) p=l.to;
-  if(!hasTotal(book)) return p;
-  if(book.status==='done' && book.endDate && book.endDate<endStr) p=book.totalPages;
-  return Math.min(p,book.totalPages);
-}
-function pctOf(book,p){ return hasTotal(book)?Math.round(p/book.totalPages*100):null; }
-function chartW(sel){ const w=$(sel).clientWidth; return w>0?Math.max(300,Math.min(900,w)):600; }
-const LINE_COLORS=['#c0703f','#6f9a5b','#d39b3a','#5b7fa3','#a8505a','#8a6bb0','#3f8f8a','#9c7a3c'];
-
+function viewedMonday(){return addDays(mondayOf(new Date()),weekOffset*7);}
 function renderWeek(c){
-  const mon=viewedMonday(), next=addDays(mon,7), s=ymd(mon), e=ymd(next);
-  $('#weekLabel').textContent=weekLabel(mon)+(weekOffset===0?' · 이번 주':'');
-  const logs=c.sorted.filter(l=>l.date>=s && l.date<e);
-  const per={};
-  for(const l of logs){ (per[l.bookId] ||= {pages:0,count:0}); per[l.bookId].pages+=c.pagesById[l.id]; per[l.bookId].count++; }
-  // 이 주에 표시할 책: 이 주에 기록이 있는 책 + 읽는 중인 책(이 주 말 기준 시작된 것)
-  const shown=data.books.filter(b=> per[b.id] || (b.status==='reading' && (!b.startDate || b.startDate<e)))
-    .map(b=>{ const p0=pageAsOf(b,s), p1=pageAsOf(b,e); const a=pctOf(b,p0), z=pctOf(b,p1);
-      return {b,p0,p1,a,z,gain:hasTotal(b)?z-a:null,pages:per[b.id]?.pages||0}; })
-    .sort((x,y)=> (y.gain??-1)-(x.gain??-1) || (y.z??-1)-(x.z??-1) || y.pages-x.pages);
-  const wkTxt=weekOffset===0?'이번 주':'이 주';
-  $('#pctList').innerHTML = shown.length ? shown.map(r=> r.z===null ? `
-    <div class="pctrow">
-      <div class="top"><div class="name">${esc(r.b.title)}<span class="pg">${r.p1}쪽 읽음 · 총 페이지 미입력</span></div>
-        <span class="gain${r.pages>0?'':' zero'}">+${r.pages}쪽 ${wkTxt}</span></div>
-    </div>` : `
-    <div class="pctrow">
-      <div class="top"><div class="name">${esc(r.b.title)}<span class="p">${r.z}%</span><span class="pg">(${r.p1}/${r.b.totalPages}쪽)</span>${r.z>=100?' 🎉':''}</div>
-        <span class="gain${r.gain>0?'':' zero'}">${r.gain>0?'+'+r.gain+'%p':'±0%p'} ${wkTxt}</span></div>
-      <div class="pbar" title="${r.a}% → ${r.z}%"><div class="base" style="width:${r.a}%"></div><div class="add" style="left:${r.a}%;width:${r.z-r.a}%"></div><div class="ticks"></div></div>
-    </div>`).join('') : '<div class="empty">이 주에 진행 중인 책이 없어요.</div>';
-  const withPages=shown.filter(r=>r.pages>0||per[r.b.id]);
-  const total=logs.reduce((t,l)=>t+c.pagesById[l.id],0);
-  $('#weekTable').innerHTML = withPages.length
-    ? withPages.map(r=>`<tr><td>${esc(r.b.title)}</td><td class="num">${r.pages.toLocaleString('ko-KR')}쪽</td>${r.z===null?'<td class="num pc hm">—</td><td class="num pc" title="총 페이지 미입력">—</td><td class="num pc">—</td>':`<td class="num pc hm">${r.a}%</td><td class="num">${r.z}%</td><td class="num gain">+${r.gain}%p</td>`}</tr>`).join('')
-      + `<tr class="total"><td>주간 합계</td><td class="num" id="weekTotal">${total.toLocaleString('ko-KR')}쪽</td><td class="hm"></td><td></td><td class="num">${logs.length}회 기록</td></tr>`
-    : `<tr><td colspan="5" class="empty">이 주에는 기록이 없어요.</td></tr>`;
-  const title=id=>{ const b=data.books.find(x=>x.id===id); return b?esc(b.title):'(삭제된 책)'; };
-  $('#weekLogs').innerHTML = logs.length ? [...logs].reverse().map(l=>{
-    const d=parse(l.date); const wd='일월화수목금토'[d.getDay()];
-    const desc=l.mode==='range'?`${l.from}~${l.to}쪽`:`${l.to}쪽까지`;
-    return `<div class="row"><div><b>${d.getMonth()+1}/${d.getDate()} (${wd})</b> ${title(l.bookId)} — ${desc} <span style="color:var(--accent)">+${c.pagesById[l.id]}쪽</span>
-      ${l.note?`<div class="note">${esc(l.note)}</div>`:''}</div></div>`;
-  }).join('') : '<div class="empty">기록이 없어요.</div>';
-  $('#nextWeek').disabled = weekOffset>=0;
-  $('#nextWeek').style.opacity = weekOffset>=0?.4:1;
+  const mon=viewedMonday(), s=ymd(mon), e=ymd(addDays(mon,7));
+  $('#weekLabel').textContent=weekLabel(mon);
+  const logs=c.sorted.filter(l=>l.date>=s&&l.date<e), per=weekPagesByBook(s,e,c);
+  const rows=sortedBooks().filter(b=>b.id in per).map(b=>{const a=pctOf(b,pageAsOf(b,s)),z=pctOf(b,pageAsOf(b,e));
+    return `<tr><td><i style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${colorOf(b)};margin-right:5px"></i>${esc(b.title)}</td><td class="num">${nf(per[b.id])}쪽</td>`+
+      (z===null?'<td class="num pc">—</td><td class="num pc">—</td><td class="num pc">—</td>':`<td class="num pc">${a}%</td><td class="num">${z}%</td><td class="num gain">+${z-a}%p</td>`)+'</tr>';});
+  const total=Object.values(per).reduce((a,b)=>a+b,0);
+  $('#weekTable').innerHTML=rows.length?rows.join('')+`<tr class="total"><td>합계</td><td class="num" id="weekTotal">${nf(total)}쪽</td><td></td><td></td><td class="num">${logs.length}회</td></tr>`
+    :'<tr><td colspan="5" class="empty">이 주에는 기록이 없어요.</td></tr>';
+  const title=id=>{const b=data.books.find(x=>x.id===id);return b?esc(b.title):'(삭제된 책)';};
+  $('#weekLogs').innerHTML=logs.length?[...logs].reverse().map(l=>{const d=parse(l.date);
+    return `<div class="row"><b>${md(d)} (${'일월화수목금토'[d.getDay()]})</b> ${title(l.bookId)} — ${l.mode==='range'?`${l.from}~${l.to}쪽`:`${l.to}쪽까지`} <span style="color:var(--accent);font-weight:700">+${c.pagesById[l.id]}쪽</span>${l.note?`<div class="note">${esc(l.note)}</div>`:''}</div>`;}).join('')
+    :'<div class="empty">기록이 없어요.</div>';
+  $('#nextWeek').disabled=weekOffset>=0;
 }
 
-function renderChart(c){
-  const endMon=viewedMonday(); const N=12; const weeks=[];
-  for(let i=N-1;i>=0;i--){ const m=addDays(endMon,-7*i); weeks.push({mon:m, off:weekOffset-i, end:ymd(addDays(m,7)), pages:pagesInRange(m,addDays(m,7),c.pagesById)}); }
-  renderLineChart(weeks);
-  // 보조: 주별 읽은 페이지 (작은 막대)
-  const max=Math.max(10,...weeks.map(w=>w.pages));
-  const W=chartW('#chart'),H=W<500?140:120,padB=20,padT=16,bw=W/N;
-  let svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="주별 읽은 페이지 막대 그래프">`;
-  svg+=`<line x1="0" y1="${H-padB}" x2="${W}" y2="${H-padB}" stroke="#eadfce"/>`;
-  weeks.forEach((w,i)=>{
-    const h=Math.round((H-padB-padT)*w.pages/max); const x=i*bw+bw*0.2, y=H-padB-h;
-    const {week}=isoWeek(w.mon);
-    svg+=`<g data-off="${w.off}"><title>${weekLabel(w.mon)}: ${w.pages}쪽</title>
-      <rect class="barrect${w.off===weekOffset?' cur':''}" x="${x}" y="${y}" width="${bw*0.6}" height="${Math.max(h,1)}" rx="3"/>
-      ${w.pages?`<text class="v" x="${x+bw*0.3}" y="${y-3}" text-anchor="middle">${w.pages}</text>`:''}
-      ${W>=500||i%2===(N-1)%2?`<text x="${x+bw*0.3}" y="${H-5}" text-anchor="middle">${week}주</text>`:''}</g>`;
+function renderLine(){
+  const el=$('#lineChart'); if(el.closest('.hidden')) return;
+  const N=12, weeks=lastWeeks(N), first=weeks[0].s, last=weeks[N-1].e;
+  const act={}; for(const l of data.logs) if(l.date>=first&&l.date<last) act[l.bookId]=1;
+  const cand=sortedBooks().filter(b=>act[b.id]||b.status==='reading');
+  const books=cand.filter(hasTotal).slice(0,8), noTotal=cand.filter(b=>!hasTotal(b));
+  const note=noTotal.length?`<div class="hint" style="margin-top:6px">총 페이지 미입력으로 제외: ${noTotal.map(b=>esc(b.title)).join(', ')}</div>`:'';
+  if(!books.length){el.innerHTML='<div class="empty">표시할 책이 없어요.</div>'+note;return;}
+  const W=chartW('#lineChart'),H=W<480?250:240,L=36,R=14,T=16,B=24,pw=W-L-R,ph=H-T-B;
+  const X=i=>L+pw*i/(N-1), Y=p=>T+ph*(1-p/100);
+  let svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="최근 12주 책별 진도(%)">`;
+  for(const p of [0,25,50,75,100]) svg+=`<line x1="${L}" y1="${Y(p)}" x2="${W-R}" y2="${Y(p)}" stroke="${p?'#f0e6d8':'#e0d3c0'}" ${p?'stroke-dasharray="3 4"':''}/><text x="${L-5}" y="${Y(p)+3}" text-anchor="end">${p}%</text>`;
+  weeks.forEach((w,i)=>{const {week}=isoWeek(w.mon); if(W>=480||i%2===1) svg+=`<text x="${X(i)}" y="${H-6}" text-anchor="middle"${w.off===0?' class="cur"':''}>${w.off===0?'이번 주':week+'주'}</text>`;});
+  const labels=[];
+  books.forEach(b=>{
+    const col=colorOf(b), pts=[]; let started=false,done=false;
+    weeks.forEach((w,i)=>{ if(done) return; const pct=pctOf(b,pageAsOf(b,w.e));
+      if(!started&&pct===0&&!(b.startDate&&b.startDate<w.e)) return;
+      if(!started&&i>0&&pct>0) pts.push([X(i-1),Y(0),0]);
+      started=true; pts.push([X(i),Y(pct),pct]); if(pct>=100) done=true; });
+    if(!pts.length) return;
+    svg+=`<polyline fill="none" stroke="${col}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" points="${pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}"/>`;
+    pts.forEach(p=>svg+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.2" fill="#fff" stroke="${col}" stroke-width="2"/>`);
+    const lp=pts[pts.length-1]; labels.push({x:Math.min(lp[0]-4,W-R-30),y:lp[1]-8,col,t:lp[2]+'%'});
   });
-  $('#chart').innerHTML=svg+'</svg>';
+  labels.sort((a,b)=>a.y-b.y); for(let i=1;i<labels.length;i++) if(Math.abs(labels[i].x-labels[i-1].x)<34&&labels[i].y-labels[i-1].y<13) labels[i].y=labels[i-1].y+13;
+  labels.forEach(l=>svg+=`<text class="v" x="${l.x}" y="${Math.max(T+4,l.y)}" text-anchor="end" style="fill:${l.col}">${l.t}</text>`);
+  el.innerHTML=svg+'</svg><div class="legend">'+books.map(b=>`<span><i class="line" style="background:${colorOf(b)}"></i>${esc(b.title)} <b style="color:${colorOf(b)}">${pctOf(b,pageNow(b))}%</b></span>`).join('')+'</div>'+note;
 }
 
-function renderLineChart(weeks){
-  const first=ymd(weeks[0].mon), last=weeks[weeks.length-1].end;
-  // 대상: 읽는 중인 책 + 이 12주 안에 기록이 있는 책 (최근 활동순, 최대 8권)
-  const lastAct={};
-  for(const l of data.logs) if(l.date>=first && l.date<last && (!lastAct[l.bookId]||l.date>lastAct[l.bookId])) lastAct[l.bookId]=l.date;
-  const books=data.books.filter(b=>hasTotal(b) && (lastAct[b.id] || (b.status==='reading' && (!b.startDate||b.startDate<last))))
-    .sort((a,b)=>(lastAct[b.id]||'').localeCompare(lastAct[a.id]||'')).slice(0,8);
-  const el=$('#lineChart');
-  const noTotal=data.books.filter(b=>!hasTotal(b) && (lastAct[b.id]||b.status==='reading'));
-  const note=noTotal.length?`<div class="hint" style="margin-top:8px">총 페이지가 입력되지 않아 % 그래프에서 제외: ${noTotal.map(b=>esc(b.title)).join(', ')}</div>`:'';
-  if(!books.length){ el.innerHTML='<div class="empty">'+(noTotal.length?'총 페이지가 입력된 책이 없어 % 그래프를 그릴 수 없어요.':'최근 12주 동안의 기록이 없어요.')+'</div>'+note; return; }
-  const W=chartW('#lineChart'),H=W<500?280:260,L=38,R=12,T=16,B=26, pw=W-L-R, ph=H-T-B, N=weeks.length;
-  const X=i=>L+pw*(N===1?0.5:i/(N-1)), Y=p=>T+ph*(1-p/100);
-  let svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="최근 12주 책별 진척도(%) 선 그래프">`;
-  for(const p of [0,25,50,75,100]) svg+=`<line x1="${L}" y1="${Y(p)}" x2="${W-R}" y2="${Y(p)}" stroke="${p?'#f0e6d8':'#e0d3c0'}" ${p?'stroke-dasharray="3 4"':''}/><text x="${L-6}" y="${Y(p)+3}" text-anchor="end">${p}%</text>`;
-  weeks.forEach((w,i)=>{ const {week}=isoWeek(w.mon);
-    if(w.off===weekOffset) svg+=`<rect x="${X(i)-pw/(N-1)/2}" y="${T}" width="${pw/(N-1)}" height="${ph}" fill="#fbeee3"/>`;
-    if(W>=500||i%2===(N-1)%2) svg+=`<text x="${X(i)}" y="${H-8}" text-anchor="middle">${week}주</text>`; });
-  const legend=[], endLabels=[];
-  books.forEach((b,bi)=>{
-    const col=LINE_COLORS[bi%LINE_COLORS.length];
-    const pts=[]; let started=false, finished=false;
-    weeks.forEach((w,i)=>{
-      if(finished) return;
-      const pct=pctOf(b,pageAsOf(b,w.end));
-      if(!started && pct===0 && !(b.startDate && b.startDate<w.end)) return;
-      if(!started && i>0 && pct>0) pts.push([X(i-1),Y(0),0,weeks[i-1]]); // 시작 전 주 0%에서 출발
-      started=true; pts.push([X(i),Y(pct),pct,w]);
-      if(pct>=100) finished=true;
-    });
-    if(pts.length){
-      svg+=`<g><polyline fill="none" stroke="${col}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" points="${pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}"/>`;
-      pts.forEach(p=>svg+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5" fill="#fff" stroke="${col}" stroke-width="2"><title>${esc(b.title)} · ${weekLabel(p[3].mon)}: ${p[2]}%</title></circle>`);
-      const lp=pts[pts.length-1]; endLabels.push({x:Math.min(lp[0]+6,W-R-26),y:lp[1]-7,col,t:lp[2]+'%'}); svg+='</g>';
-    }
-    const cur=pctOf(b,pageAsOf(b,last));
-    legend.push(`<span><i style="background:${col}"></i>${esc(b.title)} <b style="color:${col}">${cur}%</b></span>`);
-  });
-  // 끝 라벨 겹침 방지
-  endLabels.sort((a,b)=>a.y-b.y);
-  for(let i=1;i<endLabels.length;i++){ const p=endLabels[i-1],q=endLabels[i]; if(Math.abs(p.x-q.x)<34 && q.y-p.y<13) q.y=p.y+13; }
-  endLabels.forEach(l=>{ l.y=Math.max(T+4,l.y); svg+=`<text class="v" x="${l.x}" y="${l.y}" style="fill:${l.col}">${l.t}</text>`; });
-  el.innerHTML=svg+'</svg><div class="lc-legend">'+legend.join('')+'</div>'+note;
+function renderList(){
+  const q=$('#search').value.trim().toLowerCase(), f=$('#statusFilter').value;
+  const list=sortedBooks().filter(b=>(f==='all'||b.status===f)&&(!q||[b.title,b.author,b.memo].join(' ').toLowerCase().includes(q)));
+  $('#bookList').innerHTML=!data.books.length?'<div class="empty">아직 등록된 책이 없어요.</div>':!list.length?'<div class="empty">조건에 맞는 책이 없어요.</div>':
+    list.map(b=>{const p=pageNow(b),pct=pctOf(b,p);
+      return `<div class="lrow">${coverHTML(b)}<div class="info"><div class="t">${esc(b.title)}<span class="badge s-${b.status}">${STATUS[b.status]}</span></div>
+        <div class="m">${esc(b.author||'')}${b.startDate?' · '+fmtDate(b.startDate)+'~'+(b.endDate?fmtDate(b.endDate):''):''}</div>
+        ${pct!==null?`<div class="mini"><i style="width:${pct}%;background:${colorOf(b)}"></i></div>`:''}</div>
+        <div class="r">${pct!==null?`<b style="color:var(--ink)">${pct}%</b><br>${p}/${b.totalPages}쪽`:`${p}쪽 읽음<br>총 페이지 미입력`}</div></div>`;}).join('');
 }
 
-$('#search').addEventListener('input',()=>renderBooks(computeLogs()));
-$('#statusFilter').addEventListener('change',()=>renderBooks(computeLogs()));
-
-$('#prevWeek').onclick=()=>{ weekOffset--; render(); };
-$('#nextWeek').onclick=()=>{ if(weekOffset<0){ weekOffset++; render(); } };
-$('#thisWeek').onclick=()=>{ weekOffset=0; render(); };
-$('#chart').addEventListener('click',e=>{ const g=e.target.closest('g[data-off]'); if(g){ weekOffset=parseInt(g.dataset.off,10); render(); } });
-
-// ---- 탭 ----
+// ---- 이벤트 ----
+$('#prevWeek').onclick=()=>{weekOffset--;const c=computeLogs();renderWeek(c);renderWeekly(c);};
+$('#nextWeek').onclick=()=>{if(weekOffset<0){weekOffset++;const c=computeLogs();renderWeek(c);renderWeekly(c);}};
+$('#weeklyChart').addEventListener('click',e=>{const g=e.target.closest('g[data-off]');if(!g)return;weekOffset=+g.dataset.off;const c=computeLogs();renderWeek(c);renderWeekly(c);
+  document.querySelector('.tab[data-tab=week]').click();});
 document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
   document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===t));
-  $('#tab-books').classList.toggle('hidden',t.dataset.tab!=='books');
-  $('#tab-weekly').classList.toggle('hidden',t.dataset.tab!=='weekly');
-  if(t.dataset.tab==='weekly') renderChart(computeLogs());
+  for(const k of ['week','trend','list']) $('#tab-'+k).classList.toggle('hidden',t.dataset.tab!==k);
+  if(t.dataset.tab==='trend') renderLine();
 });
-let _rz; window.addEventListener('resize',()=>{ clearTimeout(_rz); _rz=setTimeout(()=>renderChart(computeLogs()),150); });
-
-// ---- 내보내기 / 가져오기 ----
+$('#search').addEventListener('input',renderList);
+$('#statusFilter').addEventListener('change',renderList);
+let rz; addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{renderWeekly(computeLogs());renderLine();},150);});
 $('#exportBtn').onclick=()=>{
-  const blob=new Blob([JSON.stringify({...data,exportedAt:new Date().toISOString()},null,2)],{type:'application/json'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`독서기록_${today()}.json`;
-  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
-  toast('JSON 파일로 내보냈어요');
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`독서기록_${today()}.json`;
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 };
 
 // ---- data.json 불러오기 (읽기 전용) ----
@@ -445,13 +408,13 @@ function fmtKST(iso){
 }
 render();
 fetch('data.json?t='+Date.now(),{cache:'no-store'})
-  .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+  .then(r=>{if(!r.ok) throw new Error('HTTP '+r.status);return r.json();})
   .then(d=>{
-    if(!d || !Array.isArray(d.books) || !Array.isArray(d.logs)) throw new Error('형식 오류');
+    if(!d||!Array.isArray(d.books)||!Array.isArray(d.logs)) throw new Error('형식 오류');
     data=d; render();
-    $('#updatedAt').textContent = d.updatedAt ? '마지막 업데이트: '+fmtKST(d.updatedAt) : '';
+    $('#updatedAt').textContent=d.updatedAt?'마지막 업데이트: '+fmtKST(d.updatedAt):'';
   })
-  .catch(err=>{ const u=$('#updatedAt'); u.textContent='기록을 불러오지 못했어요 ('+err.message+'). 잠시 후 새로고침해 주세요.'; u.classList.add('err'); });
+  .catch(err=>{const u=$('#updatedAt');u.textContent='기록을 불러오지 못했어요 ('+err.message+'). 잠시 후 새로고침해 주세요.';u.classList.add('err');});
 })();
 </script>
 </body>
