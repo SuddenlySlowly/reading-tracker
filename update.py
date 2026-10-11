@@ -4,6 +4,8 @@
 사용 예:
   python3 update.py log --book '폭풍이 온다' --page 150 [--date 2026-10-10] [--note '메모']
   python3 update.py log --book '폭풍이 온다' --from 103 --page 150      # 범위로 기록
+  python3 update.py log --book '폭풍이 온다' --page 150 --minutes 40     # 페이지 + 독서시간 (--time 1h20m 도 가능)
+  python3 update.py time --book '폭풍이 온다' --minutes 40 [--date ...]  # 페이지 변화 없이 독서시간만
   python3 update.py add-book --title '코스모스' --author '칼 세이건' --pages 720 [--status plan|reading|done|stop] [--start YYYY-MM-DD]
   python3 update.py set --book '폭풍이 온다' --pages 344 [--status done] [--author ...] [--rating 5] [--memo ...] [--start ...] [--end ...]
   python3 update.py set --book '폭풍이 온다' --cover 'https://.../cover.jpg'   # 또는 로컬 파일 경로 → covers/<id>.jpg 로 저장
@@ -71,6 +73,24 @@ def fetch_cover(src, book_id):
     return rel
 
 
+def parse_minutes(v):
+    """'40', '40m', '40분', '1h20m', '1시간 20분', '1:20', '1.5h' → 분(int)"""
+    t = str(v).strip().lower().replace(' ', '')
+    if re.fullmatch(r'\d+', t): m = int(t)
+    elif re.fullmatch(r'\d+:\d{1,2}', t): h, mm = t.split(':'); m = int(h) * 60 + int(mm)
+    else:
+        mt = re.fullmatch(r'(?:(\d+(?:\.\d+)?)(?:h|hr|hours?|시간))?(?:(\d+)(?:m|min|mins|minutes?|분))?', t)
+        if not mt or not (mt.group(1) or mt.group(2)): raise argparse.ArgumentTypeError(f"시간 형식을 알 수 없어요: {v} (예: 40, 1h20m, 1시간20분, 1:20)")
+        m = round(float(mt.group(1) or 0) * 60) + int(mt.group(2) or 0)
+    if not 0 < m <= 24 * 60: raise argparse.ArgumentTypeError('독서시간은 1분~24시간 사이여야 해요')
+    return m
+
+
+def fmt_min(m):
+    h, r = divmod(int(m), 60)
+    return (f'{h}시간' + (f' {r}분' if r else '')) if h else f'{r}분'
+
+
 def find_book(d, key):
     for b in d['books']:
         if b['id'] == key or b['title'] == key: return b
@@ -82,7 +102,7 @@ def find_book(d, key):
 
 
 def cur_page(d, b):
-    p = max([l['to'] for l in d['logs'] if l['bookId'] == b['id']] or [0])
+    p = max([l['to'] for l in d['logs'] if l['bookId'] == b['id'] and l.get('to') is not None] or [0])
     if b.get('totalPages') and b.get('status') == 'done': p = max(p, b['totalPages'])
     return p
 
@@ -99,7 +119,8 @@ def auto_done(d, b, date):
 def summary(d, b):
     p, t = cur_page(d, b), b.get('totalPages')
     prog = f"{p}/{t}쪽 ({round(p / t * 100)}%)" if t else f"{p}쪽 읽음 · 총 페이지 미입력"
-    return f"[{b['id']}] {b['title']} — {STATUS[b['status']]} — {prog}"
+    mins = sum(l.get('minutes') or 0 for l in d['logs'] if l['bookId'] == b['id'])
+    return f"[{b['id']}] {b['title']} — {STATUS[b['status']]} — {prog}" + (f" — 총 독서시간 {fmt_min(mins)}" if mins else '')
 
 
 def git_commit_push(msg, push=True):
@@ -123,6 +144,10 @@ def main():
     g.add_argument('--book', required=True); g.add_argument('--page', type=int, required=True, help='도달한(끝) 페이지')
     g.add_argument('--from', dest='frm', type=int, help='범위 기록 시 시작 페이지')
     g.add_argument('--date', type=valid_date); g.add_argument('--note', default='')
+    g.add_argument('--minutes', '--time', dest='minutes', type=parse_minutes, help='독서시간 (예: 40, 1h20m, 1시간20분)')
+    tm = sp.add_parser('time', help='페이지 변화 없이 독서시간만 기록')
+    tm.add_argument('--book', required=True); tm.add_argument('--minutes', '--time', dest='minutes', type=parse_minutes, required=True)
+    tm.add_argument('--date', type=valid_date); tm.add_argument('--note', default='')
     a = sp.add_parser('add-book', help='책 추가')
     a.add_argument('--title', required=True); a.add_argument('--author', default='')
     a.add_argument('--pages', type=int); a.add_argument('--status', default='reading')
@@ -134,7 +159,7 @@ def main():
     s.add_argument('--cover', help='표지 이미지 URL 또는 파일 경로 ("" = 표지 제거)')
     u = sp.add_parser('undo', help='책의 마지막 기록 삭제'); u.add_argument('--book', required=True)
     sp.add_parser('list', help='현재 상태 보기')
-    for p in (g, a, s, u):  # 하위 명령 뒤에도 공통 옵션 허용
+    for p in (g, tm, a, s, u):  # 하위 명령 뒤에도 공통 옵션 허용
         p.add_argument('--no-push', action='store_true', default=argparse.SUPPRESS)
         p.add_argument('--dry-run', action='store_true', default=argparse.SUPPRESS)
     args = ap.parse_args()
@@ -152,14 +177,23 @@ def main():
         if t and args.page > t: die(f"총 페이지({t}쪽)보다 클 수 없어요")
         if args.frm is not None and not (0 <= args.frm <= args.page): die('범위를 확인해 주세요 (--from ≤ --page)')
         prev = cur_page(d, b)
-        d['logs'].append({'id': 'l' + format(int(time.time() * 1000), 'x'), 'created': int(time.time() * 1000), 'date': date,
-                          'bookId': b['id'], 'mode': 'range' if args.frm is not None else 'reach',
-                          'from': args.frm, 'to': args.page, 'note': args.note})
+        entry = {'id': 'l' + format(int(time.time() * 1000), 'x'), 'created': int(time.time() * 1000), 'date': date,
+                 'bookId': b['id'], 'mode': 'range' if args.frm is not None else 'reach',
+                 'from': args.frm, 'to': args.page, 'note': args.note}
+        if args.minutes: entry['minutes'] = args.minutes
+        d['logs'].append(entry)
         if b['status'] in ('plan', 'stop'): b['status'] = 'reading'; msgs.append("상태 → 읽는 중")
         if not b.get('startDate'): b['startDate'] = date
         if args.frm is None and args.page < prev: msgs.append(f"⚠ 이전 기록({prev}쪽)보다 작은 페이지예요")
         m = auto_done(d, b, date); m and msgs.append(m)
-        commit = f"기록: {b['title']} {args.page}쪽 ({date})"
+        commit = f"기록: {b['title']} {args.page}쪽" + (f" · {fmt_min(args.minutes)}" if args.minutes else '') + f" ({date})"
+    elif args.cmd == 'time':
+        b = find_book(d, args.book); date = args.date or today()
+        d['logs'].append({'id': 'l' + format(int(time.time() * 1000), 'x'), 'created': int(time.time() * 1000), 'date': date,
+                          'bookId': b['id'], 'mode': 'time', 'from': None, 'to': None, 'minutes': args.minutes, 'note': args.note})
+        if b['status'] in ('plan', 'stop'): b['status'] = 'reading'; msgs.append("상태 → 읽는 중")
+        if not b.get('startDate'): b['startDate'] = date
+        commit = f"시간: {b['title']} {fmt_min(args.minutes)} ({date})"
     elif args.cmd == 'add-book':
         st = STATUS_ALIAS.get(args.status) or die('상태는 plan/reading/done/stop 중 하나')
         if any(x['title'] == args.title for x in d['books']): die('이미 같은 제목의 책이 있어요')
@@ -195,7 +229,8 @@ def main():
         mine = [l for l in d['logs'] if l['bookId'] == b['id']]
         if not mine: die('삭제할 기록이 없어요')
         last = max(mine, key=lambda l: (l['date'], l.get('created', 0)))
-        d['logs'].remove(last); commit = f"기록 취소: {b['title']} {last['to']}쪽 ({last['date']})"
+        what = f"{last['to']}쪽" if last.get('to') is not None else fmt_min(last.get('minutes') or 0)
+        d['logs'].remove(last); commit = f"기록 취소: {b['title']} {what} ({last['date']})"
 
     for m in msgs: print(m)
     print(summary(d, b))

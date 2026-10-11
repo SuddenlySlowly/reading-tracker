@@ -27,7 +27,8 @@ h2{font-size:1.12rem;margin:0 0 10px;letter-spacing:-.3px}
 .btn:hover{border-color:var(--accent);color:var(--accent)}
 .btn.small{padding:4px 9px;font-size:.8rem}
 .btn:disabled{opacity:.4;cursor:default}
-.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.summary{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+@media (min-width:600px){.summary{grid-template-columns:repeat(4,1fr)}}
 .stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;box-shadow:var(--shadow)}
 .stat .label{color:var(--muted);font-size:.74rem}
 .stat .value{font-size:1.35rem;font-weight:800;color:var(--accent)}
@@ -112,6 +113,22 @@ input,select{font:inherit;color:var(--ink);background:#fff;border:1px solid var(
 .lrow .mini i{display:block;height:100%;background:var(--accent)}
 .lrow .r{font-size:.8rem;color:var(--muted);text-align:right;white-space:nowrap}
 .memo{font-size:.8rem;color:#5d4f44;margin-top:4px}
+/* reading time */
+.tnav{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:2px 0 10px}
+.tnav .wk{font-size:.86rem;font-weight:700;color:#5d4f44;text-align:center}
+.thead{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.thead .total{font-size:1.9rem;font-weight:800;letter-spacing:-.5px;line-height:1.1}
+.thead .total small{font-size:1rem;font-weight:700;margin:0 2px 0 1px}
+.thead .sub{font-size:.82rem;color:var(--muted);margin-top:3px}
+.delta{font-size:.82rem;font-weight:700;border-radius:99px;padding:3px 10px;white-space:nowrap}
+.delta.up{color:#4f7d3e;background:#e9f1e3} .delta.down{color:#b0563f;background:#f8e4dc} .delta.flat{color:var(--muted);background:#f1ece5}
+.chart text.avg{fill:#8a6a50;font-weight:700}
+.subchart{border-top:1px dashed var(--line);margin-top:10px;padding-top:8px}
+.subchart h3{font-size:.85rem;margin:0 0 4px;color:#5d4f44}
+.tempty{background:var(--bg);border-radius:12px;padding:18px 14px;text-align:center;color:var(--muted);font-size:.9rem;line-height:1.6}
+.tempty b{color:var(--ink)}
+.ptime{font-size:.8rem;color:#5d4f44;margin-top:4px}
+.ptime b{color:var(--accent)}
 @media (min-width:600px){
   .pcard{grid-template-columns:120px 1fr}
   .cover{width:120px}
@@ -131,6 +148,7 @@ input,select{font:inherit;color:var(--ink);background:#fff;border:1px solid var(
   <section class="summary">
     <div class="stat"><div class="label">올해 완독</div><div class="value" id="sumDone">0<small>권</small></div></div>
     <div class="stat"><div class="label">이번 주 읽은 쪽</div><div class="value" id="sumWeek">0<small>쪽</small></div></div>
+    <div class="stat"><div class="label">이번 주 독서시간</div><div class="value" id="sumTime">—</div></div>
     <div class="stat"><div class="label">읽는 중인 책</div><div class="value" id="sumReading">0<small>권</small></div></div>
   </section>
 
@@ -138,6 +156,11 @@ input,select{font:inherit;color:var(--ink);background:#fff;border:1px solid var(
     <div class="sec-title" style="margin:0 0 6px"><h2>주차별 독서량</h2><small>최근 12주 · 쪽수</small></div>
     <div id="weeklyChart"></div>
     <div class="legend" id="weeklyLegend"></div>
+  </section>
+
+  <section class="card chart" id="timeCard">
+    <div class="sec-title" style="margin:0 0 4px"><h2>주차별 독서시간</h2><small>분 단위 기록</small></div>
+    <div id="timeBody"></div>
   </section>
 
   <div class="sec-title"><h2>책별 진도표</h2><small id="bookCount"></small></div>
@@ -220,6 +243,7 @@ function computeLogs(){
   const cur={},pagesById={};
   for(const l of sorted){
     const prev=cur[l.bookId]||0;
+    if(l.to==null){ pagesById[l.id]=0; continue; } // 시간만 기록한 항목
     pagesById[l.id]=l.mode==='range'?Math.max(0,l.to-l.from+1):Math.max(0,l.to-prev);
     cur[l.bookId]=Math.max(prev,l.to);
   }
@@ -247,13 +271,15 @@ window.__ph=id=>{const b=data.books.find(x=>x.id===id);const t=document.createEl
 function shade(hex,amt){const n=parseInt(hex.slice(1),16);const f=v=>Math.max(0,Math.min(255,v+amt));return '#'+[f(n>>16),f((n>>8)&255),f(n&255)].map(v=>v.toString(16).padStart(2,'0')).join('');}
 
 // ---- 렌더링 ----
-function render(){const c=computeLogs();renderSummary(c);renderWeekly(c);renderCards(c);renderWeek(c);renderLine();renderList();}
+function render(){const c=computeLogs();renderSummary(c);renderWeekly(c);renderTime();renderCards(c);renderWeek(c);renderLine();renderList();}
 
 function renderSummary(c){
   const y=String(new Date().getFullYear()), mon=mondayOf(new Date());
   const wk=Object.values(weekPagesByBook(ymd(mon),ymd(addDays(mon,7)),c)).reduce((a,b)=>a+b,0);
   $('#sumDone').innerHTML=data.books.filter(b=>b.status==='done'&&(b.endDate||'').startsWith(y)).length+'<small>권</small>';
   $('#sumWeek').innerHTML=nf(wk)+'<small>쪽</small>';
+  const tw=minutesIn(ymd(mon),ymd(addDays(mon,7)));
+  $('#sumTime').innerHTML=tw.has?fmtMinHTML(tw.total):'—';
   $('#sumReading').innerHTML=data.books.filter(b=>b.status==='reading').length+'<small>권</small>';
 }
 
@@ -285,6 +311,71 @@ function renderWeekly(c){
     +(avg?`<span style="margin-left:auto;color:var(--muted)">12주 평균 ${nf(avg)}쪽/주</span>`:'');
 }
 
+// ---- 독서시간 ----
+const hasMin=l=>typeof l.minutes==='number'&&l.minutes>0;
+function fmtMin(m){m=Math.round(m);if(m<60) return m+'분';const h=Math.floor(m/60),r=m%60;return h+'시간'+(r?' '+r+'분':'');}
+function fmtMinHTML(m){m=Math.round(m);if(m<60) return m+'<small>분</small>';const h=Math.floor(m/60),r=m%60;return h+'<small>시간</small>'+(r?r+'<small>분</small>':'');}
+function fmtMinShort(m){m=Math.round(m);if(m<60) return m+'분';const h=m/60;return (h>=10?Math.round(h):Math.round(h*10)/10)+'시간';}
+function minutesIn(s,e,bookId){let total=0,has=false;const by={};for(const l of data.logs) if(l.date>=s&&l.date<e&&hasMin(l)&&(!bookId||l.bookId===bookId)){total+=l.minutes;has=true;by[l.bookId]=(by[l.bookId]||0)+l.minutes;}return {total,has,by};}
+function bookTimeHTML(b,c){
+  let tot=0,pm=0,pp=0;
+  for(const l of data.logs) if(l.bookId===b.id&&hasMin(l)){tot+=l.minutes;const p=c.pagesById[l.id]||0;if(p>0){pm+=l.minutes;pp+=p;}}
+  if(!tot) return '';
+  const speed=pm>=10&&pp>0?` · 시간당 <b>${Math.round(pp/pm*60)}쪽</b>`:'';
+  return `<div class="ptime">⏱ 총 독서시간 <b>${fmtMin(tot)}</b>${speed}</div>`;
+}
+function renderTime(){
+  const el=$('#timeBody');
+  if(!data.logs.some(hasMin)){el.innerHTML='<div class="tempty">아직 기록된 독서시간이 없어요.<br>채팅으로 <b>“30분 읽었어”</b>처럼 알려주세요.</div>';return;}
+  const mon=viewedMonday(), s=ymd(mon), e=ymd(addDays(mon,7)), tdy=today();
+  const cur=minutesIn(s,e), prev=minutesIn(ymd(addDays(mon,-7)),s);
+  const isThis=weekOffset===0, daysElapsed=isThis?((new Date().getDay()+6)%7)+1:7;
+  const avg=cur.total/daysElapsed;
+  let delta='';
+  if(prev.total>0){const pct=Math.round((cur.total-prev.total)/prev.total*100);
+    delta=`<span class="delta ${pct>0?'up':pct<0?'down':'flat'}">지난주 대비 ${pct>0?'▲ '+pct:pct<0?'▼ '+(-pct):'±0'}%</span>`;}
+  else if(cur.total>0) delta='<span class="delta flat">지난주 기록 없음</span>';
+  const books=sortedBooks();
+  // 일별 막대
+  const days=[...Array(7)].map((_,i)=>{const d=addDays(mon,i),ds=ymd(d);return {d,ds,...minutesIn(ds,ymd(addDays(d,1)))};});
+  const W=chartW('#timeBody'),H=W<480?180:190,padT=22,padB=24,L=4,R=52,bw=(W-L-R)/7,ph=H-padT-padB;
+  const max=Math.max(30,...days.map(x=>x.total),avg*1.15);
+  let svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="요일별 독서시간">`;
+  svg+=`<line x1="0" y1="${H-padB}" x2="${W-R+4}" y2="${H-padB}" stroke="#e0d3c0"/>`;
+  days.forEach((x,i)=>{
+    const isT=x.ds===tdy, fut=x.ds>tdy, bx=L+i*bw+bw*.2, bwid=bw*.6; let y=H-padB;
+    svg+=`<g><title>${md(x.d)} (${'일월화수목금토'[x.d.getDay()]}): ${x.total?fmtMin(x.total):'기록 없음'}</title>`;
+    if(isT) svg+=`<rect x="${L+i*bw+2}" y="2" width="${bw-4}" height="${H-4}" rx="8" fill="#fbeee3"/>`;
+    if(!x.total&&!fut) svg+=`<rect x="${bx}" y="${H-padB-2}" width="${bwid}" height="2" rx="1" fill="#eadfce"/>`;
+    for(const b of books){const m=x.by[b.id];if(!m) continue;const h=Math.max(3,ph*m/max);y-=h;
+      svg+=`<rect x="${bx}" y="${y}" width="${bwid}" height="${h}" fill="${colorOf(b)}" opacity="${isT||!isThis?1:.75}" rx="2"><title>${esc(b.title)}: ${fmtMin(m)}</title></rect>`;}
+    if(x.total) svg+=`<text class="v${isT?' cur':''}" x="${bx+bwid/2}" y="${y-5}" text-anchor="middle">${fmtMinShort(x.total)}</text>`;
+    svg+=`<text x="${bx+bwid/2}" y="${H-7}" text-anchor="middle"${isT?' class="cur"':''}>${isT?'오늘':'월화수목금토일'[i]}</text></g>`;
+  });
+  if(avg>0){const ay=H-padB-ph*avg/max;
+    svg+=`<line x1="0" y1="${ay.toFixed(1)}" x2="${W-R+4}" y2="${ay.toFixed(1)}" stroke="#a07c5e" stroke-width="1.2" stroke-dasharray="4 4"/>`+
+      `<text class="avg" x="${W-R+8}" y="${(ay-2).toFixed(1)}">평균</text><text class="avg" x="${W-R+8}" y="${(ay+10).toFixed(1)}">${fmtMinShort(avg)}</text>`;}
+  svg+='</svg>';
+  // 12주 합계
+  const N=12, wks=[...Array(N)].map((_,i)=>{const m=addDays(mondayOf(new Date()),-7*(N-1-i));return {mon:m,off:-(N-1-i),...minutesIn(ymd(m),ymd(addDays(m,7)))};});
+  const W2=W,H2=110,pT=16,pB=18,bw2=W2/N,mx=Math.max(60,...wks.map(w=>w.total));
+  let s2=`<svg viewBox="0 0 ${W2} ${H2}" role="img" aria-label="최근 12주 주별 독서시간">`;
+  s2+=`<line x1="0" y1="${H2-pB}" x2="${W2}" y2="${H2-pB}" stroke="#e0d3c0"/>`;
+  wks.forEach((w,i)=>{const sel=w.off===weekOffset,h=w.total?Math.max(3,(H2-pT-pB)*w.total/mx):2,x=i*bw2+bw2*.2,y=H2-pB-h,{week}=isoWeek(w.mon);
+    s2+=`<g data-off="${w.off}"><title>${weekLabel(w.mon)}: ${w.total?fmtMin(w.total):'기록 없음'}</title><rect x="${i*bw2}" y="0" width="${bw2}" height="${H2}" fill="transparent"/>`+
+      `<rect x="${x}" y="${y}" width="${bw2*.6}" height="${h}" rx="2" fill="${w.total?(sel?'#5b7fa3':'#a9bdd1'):'#eadfce'}"/>`+
+      (w.total?`<text class="v" x="${x+bw2*.3}" y="${y-4}" text-anchor="middle" style="font-size:9px">${(Math.round(w.total/6)/10)}h</text>`:'')+
+      ((W2>=480||i%2===(N-1)%2)?`<text x="${x+bw2*.3}" y="${H2-5}" text-anchor="middle"${w.off===0?' class="cur"':''} style="font-size:9px">${w.off===0?'이번 주':week+'주'}</text>`:'')+'</g>';});
+  s2+='</svg>';
+  const used=books.filter(b=>cur.by[b.id]);
+  el.innerHTML=`<div class="tnav"><button class="btn small" data-tnav="-1" aria-label="이전 주">◀</button><div class="wk">${weekLabel(mon)}</div><button class="btn small" data-tnav="1" ${isThis?'disabled':''} aria-label="다음 주">▶</button></div>
+    <div class="thead"><div><div class="total" id="timeTotal">${cur.total?fmtMinHTML(cur.total):'0<small>분</small>'}</div>
+      <div class="sub">하루 평균 <b style="color:var(--ink)">${fmtMin(avg)}</b>${isThis?` <span class="hint">(${daysElapsed}일 기준)</span>`:''}</div></div>${delta}</div>
+    ${cur.has?svg:`<div class="tempty" style="margin:6px 0">이 주에는 기록된 독서시간이 없어요.</div>`}
+    ${used.length>1?`<div class="legend">${used.map(b=>`<span><i style="background:${colorOf(b)}"></i>${esc(b.title)} ${fmtMin(cur.by[b.id])}</span>`).join('')}</div>`:''}
+    <div class="subchart"><h3>최근 12주 독서시간</h3>${s2}</div>`;
+}
+
 // 책별 진도표
 function renderCards(c){
   const el=$('#progressCards'), books=sortedBooks();
@@ -296,7 +387,7 @@ function renderCards(c){
     const dates=[b.startDate?'시작 '+fmtDate(b.startDate):'', b.endDate?'완독 '+fmtDate(b.endDate):(b.status==='reading'&&b.startDate?'완독 —':'')].filter(Boolean).join(' · ');
     // 주별 기록
     const wk={};
-    for(const l of c.sorted) if(l.bookId===b.id){const m=ymd(mondayOf(parse(l.date)));wk[m]=(wk[m]||0)+c.pagesById[l.id];}
+    for(const l of c.sorted) if(l.bookId===b.id&&l.to!=null){const m=ymd(mondayOf(parse(l.date)));wk[m]=(wk[m]||0)+c.pagesById[l.id];}
     const rows=Object.keys(wk).sort().reverse().slice(0,8).map(m=>{
       const mon=parse(m), e=ymd(addDays(mon,7)), z=pctOf(b,pageAsOf(b,e)), a=pctOf(b,pageAsOf(b,m)), {week}=isoWeek(mon);
       const lab=`<span class="wk">${week}주 <span class="hint">${md(mon)}~</span></span>`;
@@ -316,6 +407,7 @@ function renderCards(c){
           :`<div class="nums"><span class="pct" style="font-size:1.25rem">${nf(p)}쪽 읽음</span><span class="pg">총 페이지 미입력</span></div>`}
         </div>
         ${dates?`<div class="dates">${dates}</div>`:''}
+        ${bookTimeHTML(b,c)}
       </div>
       ${nWeeks?`<details class="hist" ${b.status==='reading'?'open':''}><summary>주별 진도 (${nWeeks}주)</summary>${rows}</details>`:''}
     </article>`;
@@ -335,7 +427,7 @@ function renderWeek(c){
     :'<tr><td colspan="5" class="empty">이 주에는 기록이 없어요.</td></tr>';
   const title=id=>{const b=data.books.find(x=>x.id===id);return b?esc(b.title):'(삭제된 책)';};
   $('#weekLogs').innerHTML=logs.length?[...logs].reverse().map(l=>{const d=parse(l.date);
-    return `<div class="row"><b>${md(d)} (${'일월화수목금토'[d.getDay()]})</b> ${title(l.bookId)} — ${l.mode==='range'?`${l.from}~${l.to}쪽`:`${l.to}쪽까지`} <span style="color:var(--accent);font-weight:700">+${c.pagesById[l.id]}쪽</span>${l.note?`<div class="note">${esc(l.note)}</div>`:''}</div>`;}).join('')
+    return `<div class="row"><b>${md(d)} (${'일월화수목금토'[d.getDay()]})</b> ${title(l.bookId)} — ${l.to==null?'독서시간':l.mode==='range'?`${l.from}~${l.to}쪽`:`${l.to}쪽까지`}${l.to!=null?` <span style="color:var(--accent);font-weight:700">+${c.pagesById[l.id]}쪽</span>`:''}${hasMin(l)?` <span style="color:#5b7fa3;font-weight:700">⏱ ${fmtMin(l.minutes)}</span>`:''}${l.note?`<div class="note">${esc(l.note)}</div>`:''}</div>`;}).join('')
     :'<div class="empty">기록이 없어요.</div>';
   $('#nextWeek').disabled=weekOffset>=0;
 }
@@ -382,9 +474,12 @@ function renderList(){
 }
 
 // ---- 이벤트 ----
-$('#prevWeek').onclick=()=>{weekOffset--;const c=computeLogs();renderWeek(c);renderWeekly(c);};
-$('#nextWeek').onclick=()=>{if(weekOffset<0){weekOffset++;const c=computeLogs();renderWeek(c);renderWeekly(c);}};
-$('#weeklyChart').addEventListener('click',e=>{const g=e.target.closest('g[data-off]');if(!g)return;weekOffset=+g.dataset.off;const c=computeLogs();renderWeek(c);renderWeekly(c);
+function setWeek(off){weekOffset=Math.min(0,off);const c=computeLogs();renderWeek(c);renderWeekly(c);renderTime();}
+$('#prevWeek').onclick=()=>setWeek(weekOffset-1);
+$('#nextWeek').onclick=()=>setWeek(weekOffset+1);
+$('#timeBody').addEventListener('click',e=>{const b=e.target.closest('[data-tnav]');if(b){setWeek(weekOffset+(+b.dataset.tnav));return;}
+  const g=e.target.closest('g[data-off]');if(g) setWeek(+g.dataset.off);});
+$('#weeklyChart').addEventListener('click',e=>{const g=e.target.closest('g[data-off]');if(!g)return;setWeek(+g.dataset.off);
   document.querySelector('.tab[data-tab=week]').click();});
 document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
   document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===t));
@@ -393,7 +488,7 @@ document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
 });
 $('#search').addEventListener('input',renderList);
 $('#statusFilter').addEventListener('change',renderList);
-let rz; addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{renderWeekly(computeLogs());renderLine();},150);});
+let rz; addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{renderWeekly(computeLogs());renderTime();renderLine();},150);});
 $('#exportBtn').onclick=()=>{
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`독서기록_${today()}.json`;
